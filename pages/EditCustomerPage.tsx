@@ -185,7 +185,7 @@ const EditCustomerPage: React.FC = () => {
             required
           />
           <Input
-            label="Endereço com CEP"
+            label="Endereço"
             id="address"
             name="address"
             value={formData.address}
