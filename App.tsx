@@ -1,9 +1,9 @@
-
-import React from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
-import RegistrationPage from './pages/RegistrationPage';
-import CustomerListPage from './pages/CustomerListPage';
+import React from "react";
+import { HashRouter, Routes, Route } from "react-router-dom";
+import Header from "./components/Header";
+import RegistrationPage from "./pages/RegistrationPage";
+import CustomerListPage from "./pages/CustomerListPage";
+import EditCustomerPage from "./pages/EditCustomerPage";
 
 const App: React.FC = () => {
   return (
@@ -15,6 +15,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<RegistrationPage />} />
               <Route path="/list" element={<CustomerListPage />} />
+              <Route path="/edit/:id" element={<EditCustomerPage />} />
             </Routes>
           </div>
         </main>

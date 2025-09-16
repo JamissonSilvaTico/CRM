@@ -1,12 +1,12 @@
-import type { Customer, CustomerFormData } from '../types';
+import type { Customer, CustomerFormData } from "../types";
 
-const API_BASE_URL = '/api/customers';
+const API_BASE_URL = "/api/customers";
 
 export const getCustomers = async (): Promise<Customer[]> => {
   try {
     const response = await fetch(API_BASE_URL);
     if (!response.ok) {
-        throw new Error(`Error fetching customers: ${response.statusText}`);
+      throw new Error(`Error fetching customers: ${response.statusText}`);
     }
     const data: Customer[] = await response.json();
     return data;
@@ -16,20 +16,32 @@ export const getCustomers = async (): Promise<Customer[]> => {
   }
 };
 
-export const addCustomer = async (customerData: CustomerFormData): Promise<Customer> => {
+export const getCustomerById = async (id: string): Promise<Customer> => {
+  const response = await fetch(`${API_BASE_URL}/${id}`);
+  if (!response.ok) {
+    throw new Error(`Error fetching customer: ${response.statusText}`);
+  }
+  return response.json();
+};
+
+export const addCustomer = async (
+  customerData: CustomerFormData
+): Promise<Customer> => {
   try {
     const response = await fetch(API_BASE_URL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(customerData),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(customerData),
     });
 
     if (!response.ok) {
-        const errorData = await response.json();
-        // Propagate the specific error message from the backend
-        throw new Error(errorData.message || `Error adding customer: ${response.statusText}`);
+      const errorData = await response.json();
+      // Propagate the specific error message from the backend
+      throw new Error(
+        errorData.message || `Error adding customer: ${response.statusText}`
+      );
     }
 
     const newCustomer: Customer = await response.json();
@@ -37,5 +49,37 @@ export const addCustomer = async (customerData: CustomerFormData): Promise<Custo
   } catch (error) {
     console.error("Failed to add customer via API", error);
     throw error; // Re-throw the error to be handled by the form component
+  }
+};
+
+export const updateCustomer = async (
+  id: string,
+  customerData: CustomerFormData
+): Promise<Customer> => {
+  const response = await fetch(`${API_BASE_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(customerData),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || `Error updating customer: ${response.statusText}`
+    );
+  }
+
+  return response.json();
+};
+
+export const deleteCustomer = async (id: string): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/${id}`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error deleting customer: ${response.statusText}`);
   }
 };
