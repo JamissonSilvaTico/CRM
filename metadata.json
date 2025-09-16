@@ -1,0 +1,5 @@
+{
+  "name": "CRM de Clientes",
+  "description": "Uma aplicação para cadastrar e listar clientes, com campos dinâmicos para informações familiares. Ideal para gerenciar contatos e detalhes importantes de clientes.",
+  "requestFramePermissions": []
+}
