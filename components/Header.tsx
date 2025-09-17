@@ -1,33 +1,27 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
+const logoSrc =
+  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgNDAwIDE4MCI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iYmxhY2siLz48dGV4dCB4PSI1MCUiIHk9IjIwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI0IiBsZXR0ZXItc3BhY2luZz0iNCI+U1RVRElPCjwvdGV4dD48dGV4dCB4PSI1MCUiIHk9IjU1JSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJHYXJhbW9uZCwgVGltZXMgTmV3IFJvbWFuLCBzZXJpZiIgZm9udC1zaXplPSI2MCIgZm9udC13ZWlnaHQ9Im5vcm1hbCI+SnVjaWVsZTwvdGV4dD48dGV4dCB4PSI1MCUiIHk9Ijg1JSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtZmFtaWx5PSJHYXJhbW9uZCwgVGltZXMgTmV3IFJvbWFuLCBzZXJpZiIgZm9udC1zaXplPSI2MCIgZm9udC1zdHlsZT0iaXRhbGljIj5NYXJxdWVzPC90ZXh0Pjwvc3ZnPg==";
+
 const Header: React.FC = () => {
-  const activeLinkClass = "bg-blue-600 text-white";
-  const inactiveLinkClass = "text-gray-200 hover:bg-blue-800 hover:text-white";
+  const activeLinkClass = "bg-gray-700 text-white";
+  const inactiveLinkClass = "text-gray-300 hover:bg-gray-800 hover:text-white";
 
   return (
-    <header className="bg-blue-700 shadow-md">
+    <header className="bg-black shadow-md">
       <nav className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <NavLink
               to="/"
-              className="flex items-center text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-700 focus:ring-white rounded-md p-1"
+              className="flex items-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-white rounded-md"
             >
-              <svg
-                className="h-8 w-8"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span className="ml-2 text-2xl font-bold">CRM</span>
+              <img
+                src={logoSrc}
+                alt="Studio Juciele Marques"
+                className="h-12 w-auto"
+              />
             </NavLink>
           </div>
           <div className="flex space-x-4">
