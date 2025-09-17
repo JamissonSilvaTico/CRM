@@ -4,6 +4,8 @@ import Header from "./components/Header";
 import RegistrationPage from "./pages/RegistrationPage";
 import CustomerListPage from "./pages/CustomerListPage";
 import EditCustomerPage from "./pages/EditCustomerPage";
+import SchedulingPage from "./pages/SchedulingPage";
+import SchedulingListPage from "./pages/SchedulingListPage";
 
 const App: React.FC = () => {
   return (
@@ -16,6 +18,9 @@ const App: React.FC = () => {
               <Route path="/" element={<RegistrationPage />} />
               <Route path="/list" element={<CustomerListPage />} />
               <Route path="/edit/:id" element={<EditCustomerPage />} />
+              <Route path="/scheduling" element={<SchedulingPage />} />
+              <Route path="/scheduling/:id" element={<SchedulingPage />} />
+              <Route path="/scheduling-list" element={<SchedulingListPage />} />
             </Routes>
           </div>
         </main>

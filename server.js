@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path"); // Importe o módulo 'path'
 const customerRoutes = require("./customer.routes");
+const schedulingRoutes = require("./scheduling.routes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,6 +19,7 @@ app.use(express.static(path.join(__dirname, "dist")));
 
 // API Routes
 app.use("/api/customers", customerRoutes);
+app.use("/api/schedules", schedulingRoutes);
 
 // --- Rota Catch-all para o Frontend ---
 // Qualquer outra requisição GET que não seja para a API, envia o index.html do React
