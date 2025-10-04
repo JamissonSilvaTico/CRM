@@ -65,6 +65,17 @@ const Header: React.FC = () => {
             >
               Lista de Agendamentos
             </NavLink>
+            {/* NOVO: Link para a página de Pós-produção */}
+            <NavLink
+              to="/post-production"
+              className={({ isActive }) =>
+                `${
+                  isActive ? activeLinkClass : inactiveLinkClass
+                } px-3 py-2 rounded-md text-sm font-medium transition-colors`
+              }
+            >
+              Pós-produção
+            </NavLink>
           </div>
         </div>
       </nav>

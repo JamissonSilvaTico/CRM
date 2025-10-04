@@ -6,6 +6,8 @@ import CustomerListPage from "./pages/CustomerListPage";
 import EditCustomerPage from "./pages/EditCustomerPage";
 import SchedulingPage from "./pages/SchedulingPage";
 import SchedulingListPage from "./pages/SchedulingListPage";
+// NOVO: Importa a página de Pós-produção
+import PostProductionPage from "./pages/PostProductionPage";
 
 const App: React.FC = () => {
   return (
@@ -21,6 +23,8 @@ const App: React.FC = () => {
               <Route path="/scheduling" element={<SchedulingPage />} />
               <Route path="/scheduling/:id" element={<SchedulingPage />} />
               <Route path="/scheduling-list" element={<SchedulingListPage />} />
+              {/* NOVO: Rota para a página de Pós-produção */}
+              <Route path="/post-production" element={<PostProductionPage />} />
             </Routes>
           </div>
         </main>

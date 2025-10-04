@@ -1,3 +1,5 @@
+// Conteúdo anterior (Child, Customer, CustomerFormData, SessionType, Scheduling, SchedulingFormData)...
+
 export interface Child {
   name: string;
   dob: string;
@@ -44,3 +46,30 @@ export interface Scheduling {
 }
 
 export type SchedulingFormData = Omit<Scheduling, "id">;
+
+// NOVOS TIPOS PARA PÓS-PRODUÇÃO
+export enum TaskServiceType {
+  ACOMPANHAMENTO_BEBES = "Acompanhamento de bebes",
+  ACOMPANHAMENTO_GESTANTE = "Acompanhamento de Gestante",
+  EVENTOS = "Eventos",
+  PARTO = "Parto",
+  NEWBORN = "Newborn",
+  ENSAIO_FAMILIA = "Ensaio Familia",
+  PERFIL_PROFISSIONAL = "Perfil Profissional",
+  SMASH_THE_CAKE = "Smash the cake",
+  SELEBRATION = "Selebration",
+}
+
+export type TaskStatus = "Não iniciado" | "Em andamento" | "Finalizado";
+
+export interface Task {
+  id: string;
+  cliente: string;
+  filho: string;
+  servico: TaskServiceType;
+  dataEnsaio: string; // ISO String format
+  dataEntrega: string; // ISO String format
+  status: TaskStatus;
+}
+
+export type TaskFormData = Omit<Task, "id">;
