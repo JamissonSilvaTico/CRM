@@ -4,6 +4,15 @@ import { getCustomers, deleteCustomer } from "../services/customerService";
 import type { Customer } from "../types";
 import Input from "../components/Input";
 
+const formatDate = (dateString?: string): string => {
+  if (!dateString) return "";
+  // Handles YYYY-MM-DD
+  const parts = dateString.split("-");
+  if (parts.length !== 3) return dateString;
+  const [year, month, day] = parts;
+  return `${day}/${month}/${year}`;
+};
+
 const BirthdayIndicator: React.FC<{ dob?: string; filterMonth?: string }> = ({
   dob,
   filterMonth,
@@ -32,6 +41,9 @@ const CustomerCard: React.FC<{
       )}
       <div className="mt-4 space-y-2 text-sm text-gray-700">
         <p>
+          <strong>Nascimento Cliente:</strong> {formatDate(customer.dob)}
+        </p>
+        <p>
           <strong>CPF:</strong> {customer.cpf}
         </p>
         <p>
@@ -46,8 +58,14 @@ const CustomerCard: React.FC<{
           </p>
         )}
         {customer.husbandName && (
-          <p className="flex items-center">
+          <p>
             <strong>Marido:</strong> {customer.husbandName}
+          </p>
+        )}
+        {customer.husbandDob && (
+          <p className="flex items-center">
+            <strong>Nascimento Marido:</strong>{" "}
+            {formatDate(customer.husbandDob)}
             <BirthdayIndicator
               dob={customer.husbandDob}
               filterMonth={birthdayMonth}
@@ -62,7 +80,7 @@ const CustomerCard: React.FC<{
             <ul className="list-disc list-inside">
               {customer.children.map((child, index) => (
                 <li key={index} className="flex items-center">
-                  {child.name} ({child.dob})
+                  {child.name} ({formatDate(child.dob)})
                   <BirthdayIndicator
                     dob={child.dob}
                     filterMonth={birthdayMonth}
