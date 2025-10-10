@@ -12,6 +12,9 @@ const sessionTypes = [
   "Newborn",
   "Smash the Cake",
   "Sessão Especial",
+  "Natal",
+  "Dia dos Pais",
+  "Dia das Mães",
 ];
 
 const schedulingSchema = new mongoose.Schema(

@@ -35,6 +35,9 @@ export enum SessionType {
   NEWBORN = "Newborn",
   SMASH_THE_CAKE = "Smash the Cake",
   SESSAO_ESPECIAL = "Sessão Especial",
+  NATAL = "Natal",
+  DIA_DOS_PAIS = "Dia dos Pais",
+  DIA_DAS_MAES = "Dia das Mães",
 }
 
 export interface Scheduling {
