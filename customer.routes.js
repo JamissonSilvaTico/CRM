@@ -6,7 +6,24 @@ const mongoose = require("mongoose");
 // GET all customers
 router.get("/", async (req, res) => {
   try {
-    const customers = await Customer.find().sort({ createdAt: -1 });
+    const { month } = req.query;
+    const filter = {};
+
+    if (month) {
+      // Month comes as 1-12, needs to be formatted to "01", "02" for regex matching
+      const monthStr = String(month).padStart(2, "0");
+      // Matches dates in YYYY-MM-DD format
+      const birthdayRegex = new RegExp(`-${monthStr}-`);
+
+      filter.$or = [
+        { dob: { $regex: birthdayRegex } },
+        { husbandDob: { $regex: birthdayRegex } },
+        { "children.dob": { $regex: birthdayRegex } },
+      ];
+    }
+
+    // Sort alphabetically by full name
+    const customers = await Customer.find(filter).sort({ fullName: 1 });
     res.json(customers);
   } catch (err) {
     res
@@ -46,11 +63,9 @@ router.post("/", async (req, res) => {
     // Handle duplicate key errors for cpf/email
     if (err.code === 11000) {
       const field = Object.keys(err.keyValue)[0];
-      return res
-        .status(409)
-        .json({
-          message: `Erro: ${field === "cpf" ? "CPF" : "Email"} já cadastrado.`,
-        });
+      return res.status(409).json({
+        message: `Erro: ${field === "cpf" ? "CPF" : "Email"} já cadastrado.`,
+      });
     }
     res
       .status(400)
@@ -76,13 +91,11 @@ router.put("/:id", async (req, res) => {
   } catch (err) {
     if (err.code === 11000) {
       const field = Object.keys(err.keyValue)[0];
-      return res
-        .status(409)
-        .json({
-          message: `Erro: ${
-            field === "cpf" ? "CPF" : "Email"
-          } já pertence a outro cliente.`,
-        });
+      return res.status(409).json({
+        message: `Erro: ${
+          field === "cpf" ? "CPF" : "Email"
+        } já pertence a outro cliente.`,
+      });
     }
     res
       .status(400)

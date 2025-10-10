@@ -2,9 +2,18 @@ import type { Customer, CustomerFormData } from "../types";
 
 const API_BASE_URL = "/api/customers";
 
-export const getCustomers = async (): Promise<Customer[]> => {
+interface GetCustomersParams {
+  month?: string;
+}
+
+export const getCustomers = async (
+  params: GetCustomersParams = {}
+): Promise<Customer[]> => {
+  const query = new URLSearchParams();
+  if (params.month) query.append("month", params.month);
+
   try {
-    const response = await fetch(API_BASE_URL);
+    const response = await fetch(`${API_BASE_URL}?${query.toString()}`);
     if (!response.ok) {
       throw new Error(`Error fetching customers: ${response.statusText}`);
     }
