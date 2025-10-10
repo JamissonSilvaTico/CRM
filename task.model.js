@@ -27,6 +27,8 @@ const taskSchema = new mongoose.Schema(
       enum: statusOptions,
       default: "Não iniciado",
     },
+    armazenadoHD: { type: String },
+    minFotos: { type: Number },
   },
   { timestamps: true }
 );

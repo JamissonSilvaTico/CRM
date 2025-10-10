@@ -71,6 +71,8 @@ export interface Task {
   dataEnsaio: string; // ISO String format
   dataEntrega: string; // ISO String format
   status: TaskStatus;
+  armazenadoHD?: string;
+  minFotos?: number;
 }
 
 export type TaskFormData = Omit<Task, "id">;

@@ -96,6 +96,19 @@ const TaskCard: React.FC<{
           </span>
         </p>
 
+        <div className="mt-3 text-sm text-gray-700 space-y-1">
+          {task.minFotos != null && task.minFotos > 0 && (
+            <p>
+              <strong>Mínimo de Fotos:</strong> {task.minFotos}
+            </p>
+          )}
+          {task.armazenadoHD && (
+            <p>
+              <strong>Armazenado em:</strong> {task.armazenadoHD}
+            </p>
+          )}
+        </div>
+
         <div className="flex justify-between mt-3 text-xs text-gray-600">
           <span>
             <strong>Ensaio:</strong> {formatDate(task.dataEnsaio)}
@@ -165,6 +178,8 @@ const TaskModal: React.FC<{
     dataEnsaio: "",
     dataEntrega: "",
     status: STATUS_OPTIONS[0],
+    armazenadoHD: "",
+    minFotos: undefined,
   };
   const [formData, setFormData] = useState<TaskFormData>(initialFormData);
   const [id, setId] = useState<string | undefined>(undefined);
@@ -182,6 +197,8 @@ const TaskModal: React.FC<{
           dataEntrega: new Date(taskToEdit.dataEntrega)
             .toISOString()
             .split("T")[0],
+          armazenadoHD: taskToEdit.armazenadoHD || "",
+          minFotos: taskToEdit.minFotos,
         });
       } else {
         setId(undefined);
@@ -195,8 +212,13 @@ const TaskModal: React.FC<{
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    if (type === "checkbox") {
+      const { checked } = e.target as HTMLInputElement;
+      setFormData((prev) => ({ ...prev, [name]: checked }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -303,6 +325,26 @@ const TaskModal: React.FC<{
             </select>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Quantidade Mínima de Fotos"
+              id="minFotos"
+              name="minFotos"
+              type="number"
+              value={formData.minFotos || ""}
+              onChange={handleChange}
+              placeholder="Ex: 30"
+            />
+            <Input
+              label="Armazenado no HD"
+              id="armazenadoHD"
+              name="armazenadoHD"
+              value={formData.armazenadoHD || ""}
+              onChange={handleChange}
+              placeholder="Ex: HD Externo 01"
+            />
+          </div>
+
           <div className="pt-4 flex justify-end space-x-2">
             <button
               type="button"
@@ -383,10 +425,19 @@ const PostProductionPage: React.FC = () => {
 
   const handleSaveTask = async (taskData: TaskFormData & { id?: string }) => {
     try {
-      if (taskData.id) {
-        await updateTask(taskData.id, taskData);
+      const payload = {
+        ...taskData,
+        // FIX: The type of `taskData.minFotos` is `number | undefined`, but it can be a string from the form.
+        // Cast to `any` to avoid a compile error and use `== null` to check for both `null` and `undefined`.
+        minFotos:
+          (taskData.minFotos as any) === "" || taskData.minFotos == null
+            ? undefined
+            : Number(taskData.minFotos),
+      };
+      if (payload.id) {
+        await updateTask(payload.id, payload);
       } else {
-        await addTask(taskData);
+        await addTask(payload);
       }
       // Recarrega a lista após a operação
       fetchTasks(filters);
