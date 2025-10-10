@@ -1,218 +1,180 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { getCustomers } from "../services/customerService";
-import {
-  addSchedule,
-  getScheduleById,
-  updateSchedule,
-} from "../services/schedulingService";
-import type { Customer, SchedulingFormData } from "../types";
-import { SessionType } from "../types";
-import Input from "../components/Input";
-import Button from "../components/Button";
+import React, { useState } from "react";
 
-const SchedulingPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const isEditing = Boolean(id);
+const ChevronDownIcon: React.FC = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-5 w-5"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M19 9l-7 7-7-7"
+    />
+  </svg>
+);
 
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [formData, setFormData] = useState<SchedulingFormData>({
-    customerName: "",
-    sessionType: Object.values(SessionType)[0],
-    date: "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(true);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+const SchedulingForm: React.FC = () => {
+  const [clientName, setClientName] = useState("");
+  const [rehearsalType, setRehearsalType] = useState("Acompanhamento Infantil");
+  const [rehearsalDate, setRehearsalDate] = useState("");
+  const [observation, setObservation] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      setIsFetching(true);
-      try {
-        const customerData = await getCustomers();
-        setCustomers(customerData);
-
-        if (isEditing && id) {
-          const scheduleData = await getScheduleById(id);
-          setFormData({
-            customerId: scheduleData.customerId,
-            customerName: scheduleData.customerName,
-            sessionType: scheduleData.sessionType,
-            date: new Date(scheduleData.date).toISOString().split("T")[0],
-          });
-        }
-      } catch (error) {
-        setErrorMessage("Falha ao carregar dados.");
-      } finally {
-        setIsFetching(false);
-      }
-    };
-    fetchInitialData();
-  }, [id, isEditing]);
-
-  const handleCustomerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.value;
-    const selectedCustomer = customers.find(
-      (c) => (c.preferredName || c.fullName) === name
-    );
-    setFormData((prev) => ({
-      ...prev,
-      customerName: name,
-      customerId: selectedCustomer ? selectedCustomer.id : "",
-    }));
+  const resetForm = () => {
+    setClientName("");
+    setRehearsalType("Acompanhamento Infantil");
+    setRehearsalDate("");
+    setObservation("");
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setSuccessMessage("");
-    setErrorMessage("");
+    setIsSubmitting(true);
 
-    const payload: Partial<SchedulingFormData> = { ...formData };
-    // Ensure we don't send an empty customerId string if no customer is selected
-    if (!payload.customerId) {
-      delete payload.customerId;
-    }
+    const formData = {
+      clientName,
+      rehearsalType,
+      rehearsalDate,
+      observation,
+    };
 
+    console.log("Sending data to server:", formData);
+
+    // Simulate an API call to store data in the database
     try {
-      if (isEditing && id) {
-        await updateSchedule(id, payload);
-        setSuccessMessage("Agendamento atualizado com sucesso!");
-      } else {
-        await addSchedule(payload as SchedulingFormData);
-        setSuccessMessage("Agendamento criado com sucesso!");
-        setFormData({
-          customerName: "",
-          sessionType: Object.values(SessionType)[0],
-          date: "",
-        });
-      }
-      window.scrollTo(0, 0);
-      setTimeout(() => navigate("/scheduling-list"), 2000);
+      // In a real application, you would replace this with a fetch call:
+      // const response = await fetch('/api/schedules', {
+      //     method: 'POST',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify(formData),
+      // });
+      // if (!response.ok) throw new Error('Network response was not ok.');
+
+      // Simulating a 1.5 second network delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      // Simulate a successful response
+      alert("Agendamento salvo com sucesso!");
+      resetForm();
     } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message || "Ocorreu um erro.");
-      } else {
-        setErrorMessage("Ocorreu um erro desconhecido.");
-      }
+      console.error("Failed to submit schedule:", error);
+      alert("Falha ao salvar o agendamento. Por favor, tente novamente.");
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
-
-  if (isFetching) {
-    return <div className="text-center p-10">Carregando...</div>;
-  }
 
   return (
-    <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6 border-b pb-4">
-        {isEditing ? "Editar Agendamento" : "Novo Agendamento"}
-      </h2>
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="p-8 md:p-10">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 pb-4 border-b border-gray-200">
+          Novo Agendamento
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label
+              htmlFor="clientName"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Nome do Cliente
+            </label>
+            <input
+              type="text"
+              id="clientName"
+              value={clientName}
+              onChange={(e) => setClientName(e.target.value)}
+              placeholder="Digite ou selecione o nome do cliente"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+          </div>
 
-      {successMessage && (
-        <div
-          className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md mb-6"
-          role="alert"
-        >
-          {successMessage}
-        </div>
-      )}
-      {errorMessage && (
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-6"
-          role="alert"
-        >
-          {errorMessage}
-        </div>
-      )}
+          <div>
+            <label
+              htmlFor="rehearsalType"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Tipo de Ensaio
+            </label>
+            <div className="relative">
+              <select
+                id="rehearsalType"
+                value={rehearsalType}
+                onChange={(e) => setRehearsalType(e.target.value)}
+                className="w-full appearance-none bg-white px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option>Acompanhamento Infantil</option>
+                <option>Ensaio Gestante</option>
+                <option>Newborn</option>
+                <option>Smash the Cake</option>
+                <option>Aniversário</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                <ChevronDownIcon />
+              </div>
+            </div>
+          </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label
-            htmlFor="customerName"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Nome do Cliente
-          </label>
-          <input
-            id="customerName"
-            name="customerName"
-            type="text"
-            list="customer-list"
-            value={formData.customerName}
-            onChange={handleCustomerChange}
-            placeholder="Digite ou selecione o nome do cliente"
-            required
-            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition"
-          />
-          <datalist id="customer-list">
-            {customers.map((customer) => (
-              <option
-                key={customer.id}
-                value={customer.preferredName || customer.fullName}
-              />
-            ))}
-          </datalist>
-        </div>
+          <div>
+            <label
+              htmlFor="rehearsalDate"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Data do Ensaio
+            </label>
+            <input
+              type="date"
+              id="rehearsalDate"
+              value={rehearsalDate}
+              onChange={(e) => setRehearsalDate(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="dd/mm/aaaa"
+              required
+            />
+          </div>
 
-        <div>
-          <label
-            htmlFor="sessionType"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Tipo de Ensaio
-          </label>
-          <select
-            id="sessionType"
-            name="sessionType"
-            value={formData.sessionType}
-            onChange={handleChange}
-            required
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-          >
-            {Object.values(SessionType).map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div>
+            <label
+              htmlFor="observation"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Observação
+            </label>
+            <textarea
+              id="observation"
+              rows={4}
+              value={observation}
+              onChange={(e) => setObservation(e.target.value)}
+              placeholder="Adicione qualquer observação relevante aqui..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
-        <Input
-          label="Data do Ensaio"
-          id="date"
-          name="date"
-          type="date"
-          value={formData.date}
-          onChange={handleChange}
-          required
-        />
-
-        <div className="pt-6 flex space-x-4">
-          <Button type="submit" isLoading={isLoading}>
-            {isEditing ? "Salvar Alterações" : "Agendar"}
-          </Button>
-          <button
-            type="button"
-            onClick={() => navigate(isEditing ? "/scheduling-list" : "/list")}
-            className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-          >
-            Cancelar
-          </button>
-        </div>
-      </form>
+          <div className="flex justify-end items-center pt-4 gap-4">
+            <button
+              type="button"
+              onClick={resetForm}
+              disabled={isSubmitting}
+              className="px-6 py-2 border border-gray-300 rounded-md text-sm font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="px-8 py-2 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "Agendando..." : "Agendar"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
 
-export default SchedulingPage;
+export default SchedulingForm;
