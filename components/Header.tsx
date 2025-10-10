@@ -26,7 +26,7 @@ const Header: React.FC = () => {
           </div>
           <div className="flex space-x-4">
             <NavLink
-              to="/"
+              to="/clientes"
               className={({ isActive }) =>
                 `${
                   isActive ? activeLinkClass : inactiveLinkClass
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
               Clientes
             </NavLink>
             <NavLink
-              to="/scheduling-list"
+              to="/agendamentos"
               className={({ isActive }) =>
                 `${
                   isActive ? activeLinkClass : inactiveLinkClass
@@ -46,7 +46,7 @@ const Header: React.FC = () => {
               Agendamentos
             </NavLink>
             <NavLink
-              to="/post-production"
+              to="/pos-producao"
               className={({ isActive }) =>
                 `${
                   isActive ? activeLinkClass : inactiveLinkClass
