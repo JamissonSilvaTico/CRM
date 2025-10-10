@@ -26,7 +26,7 @@ const Header: React.FC = () => {
           </div>
           <div className="flex space-x-4">
             <NavLink
-              to="/"
+              to="/register"
               className={({ isActive }) =>
                 `${
                   isActive ? activeLinkClass : inactiveLinkClass
