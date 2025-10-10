@@ -21,6 +21,7 @@ const SchedulingPage: React.FC = () => {
     customerName: "",
     sessionType: Object.values(SessionType)[0],
     date: "",
+    observacao: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -41,6 +42,7 @@ const SchedulingPage: React.FC = () => {
             customerName: scheduleData.customerName,
             sessionType: scheduleData.sessionType,
             date: new Date(scheduleData.date).toISOString().split("T")[0],
+            observacao: scheduleData.observacao || "",
           });
         }
       } catch (error) {
@@ -65,7 +67,9 @@ const SchedulingPage: React.FC = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -94,6 +98,7 @@ const SchedulingPage: React.FC = () => {
           customerName: "",
           sessionType: Object.values(SessionType)[0],
           date: "",
+          observacao: "",
         });
       }
       window.scrollTo(0, 0);
@@ -197,6 +202,24 @@ const SchedulingPage: React.FC = () => {
           onChange={handleChange}
           required
         />
+
+        <div>
+          <label
+            htmlFor="observacao"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Observação
+          </label>
+          <textarea
+            id="observacao"
+            name="observacao"
+            rows={4}
+            value={formData.observacao || ""}
+            onChange={handleChange}
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition"
+            placeholder="Adicione observações sobre o agendamento..."
+          />
+        </div>
 
         <div className="pt-6 flex space-x-4">
           <Button type="submit" isLoading={isLoading}>

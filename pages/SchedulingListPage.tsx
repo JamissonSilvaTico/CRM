@@ -174,6 +174,11 @@ const SchedulingListPage: React.FC = () => {
                 <p className="text-sm text-gray-600 mt-1">
                   {schedule.sessionType}
                 </p>
+                {schedule.observacao && (
+                  <p className="text-sm text-gray-500 mt-2 italic whitespace-pre-wrap">
+                    <strong>Obs:</strong> {schedule.observacao}
+                  </p>
+                )}
                 <p className="text-md font-semibold text-gray-800 mt-4">
                   {new Date(schedule.date).toLocaleDateString("pt-BR", {
                     timeZone: "UTC",

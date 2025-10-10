@@ -57,7 +57,7 @@ router.get("/:id", async (req, res) => {
 
 // POST a new schedule
 router.post("/", async (req, res) => {
-  const { customerId, customerName, sessionType, date } = req.body;
+  const { customerId, customerName, sessionType, date, observacao } = req.body;
 
   if (!customerName || !sessionType || !date) {
     return res
@@ -65,7 +65,7 @@ router.post("/", async (req, res) => {
       .json({ message: "Customer name, session type, and date are required" });
   }
 
-  const scheduleData = { customerName, sessionType, date };
+  const scheduleData = { customerName, sessionType, date, observacao };
   // Only associate with a customer if a valid ID is provided
   if (customerId && mongoose.Types.ObjectId.isValid(customerId)) {
     scheduleData.customerId = customerId;

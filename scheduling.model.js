@@ -20,6 +20,7 @@ const schedulingSchema = new mongoose.Schema(
     customerName: { type: String, required: true },
     sessionType: { type: String, required: true, enum: sessionTypes },
     date: { type: Date, required: true },
+    observacao: { type: String },
   },
   { timestamps: true }
 );
