@@ -468,7 +468,7 @@ const PostProductionPage: React.FC = () => {
         </h1>
         <Button
           onClick={openModalForNew}
-          className="!w-auto bg-green-600 hover:bg-green-700"
+          className="!w-auto bg-gray-800 hover:bg-gray-900"
         >
           + Nova Tarefa
         </Button>
@@ -532,7 +532,7 @@ const PostProductionPage: React.FC = () => {
 
         <button
           onClick={handleApplyFilters}
-          className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+          className="w-full bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900 transition-colors text-sm font-medium"
         >
           Filtrar
         </button>

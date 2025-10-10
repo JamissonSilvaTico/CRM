@@ -526,7 +526,7 @@ const CustomerListPage: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-900">Gestão de Clientes</h2>
         <Button
           onClick={openModalForNew}
-          className="!w-auto bg-green-600 hover:bg-green-700"
+          className="!w-auto bg-gray-800 hover:bg-gray-900"
         >
           + Novo Cliente
         </Button>
@@ -558,7 +558,7 @@ const CustomerListPage: React.FC = () => {
           </select>
           <button
             onClick={handleApplyFilters}
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+            className="w-full bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900 transition-colors text-sm font-medium"
           >
             Filtrar
           </button>

@@ -222,26 +222,23 @@ const SchedulingListPage: React.FC = () => {
     null
   );
 
-  const fetchSchedules = useCallback(
-    async (currentFilters: typeof filters) => {
-      setIsLoading(true);
-      setError("");
-      try {
-        const params = {
-          month: currentFilters.month || undefined,
-          year: currentFilters.year || undefined,
-          sessionType: currentFilters.sessionType || undefined,
-        };
-        const scheduleData = await getSchedules(params);
-        setSchedules(scheduleData);
-      } catch (err) {
-        setError("Falha ao carregar agendamentos.");
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
+  const fetchSchedules = useCallback(async (currentFilters: typeof filters) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const params = {
+        month: currentFilters.month || undefined,
+        year: currentFilters.year || undefined,
+        sessionType: currentFilters.sessionType || undefined,
+      };
+      const scheduleData = await getSchedules(params);
+      setSchedules(scheduleData);
+    } catch (err) {
+      setError("Falha ao carregar agendamentos.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -320,12 +317,18 @@ const SchedulingListPage: React.FC = () => {
   }, []);
 
   const months = [
-    { value: "1", label: "Janeiro" }, { value: "2", label: "Fevereiro" },
-    { value: "3", label: "Março" }, { value: "4", label: "Abril" },
-    { value: "5", label: "Maio" }, { value: "6", label: "Junho" },
-    { value: "7", label: "Julho" }, { value: "8", label: "Agosto" },
-    { value: "9", label: "Setembro" }, { value: "10", label: "Outubro" },
-    { value: "11", label: "Novembro" }, { value: "12", label: "Dezembro" },
+    { value: "1", label: "Janeiro" },
+    { value: "2", label: "Fevereiro" },
+    { value: "3", label: "Março" },
+    { value: "4", label: "Abril" },
+    { value: "5", label: "Maio" },
+    { value: "6", label: "Junho" },
+    { value: "7", label: "Julho" },
+    { value: "8", label: "Agosto" },
+    { value: "9", label: "Setembro" },
+    { value: "10", label: "Outubro" },
+    { value: "11", label: "Novembro" },
+    { value: "12", label: "Dezembro" },
   ];
 
   return (
@@ -336,7 +339,7 @@ const SchedulingListPage: React.FC = () => {
         </h2>
         <Button
           onClick={openModalForNew}
-          className="!w-auto bg-green-600 hover:bg-green-700"
+          className="!w-auto bg-gray-800 hover:bg-gray-900"
         >
           + Novo Agendamento
         </Button>
@@ -345,20 +348,57 @@ const SchedulingListPage: React.FC = () => {
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6 p-4 border rounded-md bg-gray-50 items-center">
-        <select name="month" value={filters.month} onChange={handleFilterChange} className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+        <select
+          name="month"
+          value={filters.month}
+          onChange={handleFilterChange}
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+        >
           <option value="">Mês</option>
-          {months.map((m) => (<option key={m.value} value={m.value}>{m.label}</option>))}
+          {months.map((m) => (
+            <option key={m.value} value={m.value}>
+              {m.label}
+            </option>
+          ))}
         </select>
-        <select name="year" value={filters.year} onChange={handleFilterChange} className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+        <select
+          name="year"
+          value={filters.year}
+          onChange={handleFilterChange}
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+        >
           <option value="">Ano</option>
-          {years.map((y) => (<option key={y} value={y}>{y}</option>))}
+          {years.map((y) => (
+            <option key={y} value={y}>
+              {y}
+            </option>
+          ))}
         </select>
-        <select name="sessionType" value={filters.sessionType} onChange={handleFilterChange} className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+        <select
+          name="sessionType"
+          value={filters.sessionType}
+          onChange={handleFilterChange}
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+        >
           <option value="">Tipo de Ensaio</option>
-          {Object.values(SessionType).map((type) => (<option key={type} value={type}>{type}</option>))}
+          {Object.values(SessionType).map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
         </select>
-        <button onClick={handleApplyFilters} className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">Filtrar</button>
-        <button onClick={handleClearFilters} className="w-full bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400">Limpar</button>
+        <button
+          onClick={handleApplyFilters}
+          className="w-full bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900 transition-colors text-sm font-medium"
+        >
+          Filtrar
+        </button>
+        <button
+          onClick={handleClearFilters}
+          className="w-full bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors text-sm font-medium"
+        >
+          Limpar
+        </button>
       </div>
 
       {isLoading ? (
@@ -366,20 +406,39 @@ const SchedulingListPage: React.FC = () => {
       ) : schedules.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {schedules.map((schedule) => (
-            <div key={schedule.id} className="bg-white rounded-lg shadow-md p-5 flex flex-col justify-between transition-all hover:shadow-xl hover:-translate-y-1">
+            <div
+              key={schedule.id}
+              className="bg-white rounded-lg shadow-md p-5 flex flex-col justify-between transition-all hover:shadow-xl hover:-translate-y-1"
+            >
               <div>
-                <h3 className="text-xl font-bold text-blue-700">{schedule.customerName}</h3>
-                <p className="text-sm text-gray-600 mt-1">{schedule.sessionType}</p>
-                {schedule.observacao && (<p className="text-sm text-gray-500 mt-2 italic whitespace-pre-wrap"><strong>Obs:</strong> {schedule.observacao}</p>)}
+                <h3 className="text-xl font-bold text-blue-700">
+                  {schedule.customerName}
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  {schedule.sessionType}
+                </p>
+                {schedule.observacao && (
+                  <p className="text-sm text-gray-500 mt-2 italic whitespace-pre-wrap">
+                    <strong>Obs:</strong> {schedule.observacao}
+                  </p>
+                )}
                 <p className="text-md font-semibold text-gray-800 mt-4">
-                  {new Date(schedule.date).toLocaleDateString("pt-BR", { timeZone: "UTC" })}
+                  {new Date(schedule.date).toLocaleDateString("pt-BR", {
+                    timeZone: "UTC",
+                  })}
                 </p>
               </div>
               <div className="mt-4 pt-4 border-t flex justify-end space-x-2">
-                <button onClick={() => openModalForEdit(schedule)} className="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-100 rounded-md hover:bg-blue-200">
+                <button
+                  onClick={() => openModalForEdit(schedule)}
+                  className="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-100 rounded-md hover:bg-blue-200"
+                >
                   Editar
                 </button>
-                <button onClick={() => handleDelete(schedule.id)} className="px-3 py-1 text-sm font-medium text-red-600 bg-red-100 rounded-md hover:bg-red-200">
+                <button
+                  onClick={() => handleDelete(schedule.id)}
+                  className="px-3 py-1 text-sm font-medium text-red-600 bg-red-100 rounded-md hover:bg-red-200"
+                >
                   Excluir
                 </button>
               </div>
