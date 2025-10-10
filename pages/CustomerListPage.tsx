@@ -325,7 +325,7 @@ const CustomerCard: React.FC<{
 }> = ({ customer, onDelete, onEdit, birthdayMonth }) => (
   <div className="bg-white rounded-lg shadow-md p-5 flex flex-col justify-between transition-all hover:shadow-xl hover:-translate-y-1">
     <div>
-      <h3 className="text-xl font-bold text-blue-700 flex items-center">
+      <h3 className="text-xl font-bold text-gray-900 flex items-center">
         {customer.preferredName || customer.fullName}
         <BirthdayIndicator dob={customer.dob} filterMonth={birthdayMonth} />
       </h3>

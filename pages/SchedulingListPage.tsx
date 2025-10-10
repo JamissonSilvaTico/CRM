@@ -411,7 +411,7 @@ const SchedulingListPage: React.FC = () => {
               className="bg-white rounded-lg shadow-md p-5 flex flex-col justify-between transition-all hover:shadow-xl hover:-translate-y-1"
             >
               <div>
-                <h3 className="text-xl font-bold text-blue-700">
+                <h3 className="text-xl font-bold text-gray-900">
                   {schedule.customerName}
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">
