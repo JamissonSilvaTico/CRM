@@ -26,34 +26,14 @@ const Header: React.FC = () => {
           </div>
           <div className="flex space-x-4">
             <NavLink
-              to="/register"
+              to="/"
               className={({ isActive }) =>
                 `${
                   isActive ? activeLinkClass : inactiveLinkClass
                 } px-3 py-2 rounded-md text-sm font-medium transition-colors`
               }
             >
-              Cadastro
-            </NavLink>
-            <NavLink
-              to="/list"
-              className={({ isActive }) =>
-                `${
-                  isActive ? activeLinkClass : inactiveLinkClass
-                } px-3 py-2 rounded-md text-sm font-medium transition-colors`
-              }
-            >
-              Lista de Clientes
-            </NavLink>
-            <NavLink
-              to="/scheduling"
-              className={({ isActive }) =>
-                `${
-                  isActive ? activeLinkClass : inactiveLinkClass
-                } px-3 py-2 rounded-md text-sm font-medium transition-colors`
-              }
-            >
-              Agendamento
+              Clientes
             </NavLink>
             <NavLink
               to="/scheduling-list"
@@ -63,9 +43,8 @@ const Header: React.FC = () => {
                 } px-3 py-2 rounded-md text-sm font-medium transition-colors`
               }
             >
-              Lista de Agendamentos
+              Agendamentos
             </NavLink>
-            {/* NOVO: Link para a página de Pós-produção */}
             <NavLink
               to="/post-production"
               className={({ isActive }) =>
