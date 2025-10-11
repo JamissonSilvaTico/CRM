@@ -389,7 +389,7 @@ const SchedulingListPage: React.FC = () => {
         </select>
         <button
           onClick={handleApplyFilters}
-          className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          className="w-full bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
         >
           Filtrar
         </button>
@@ -401,11 +401,11 @@ const SchedulingListPage: React.FC = () => {
         </button>
       </div>
 
-      {!isLoading && (
-        <div className="mb-4">
-          <p className="text-md text-gray-800">
-            <span className="font-bold">{schedules.length}</span> agendamento(s)
-            encontrado(s).
+      {!isLoading && schedules.length > 0 && (
+        <div className="mb-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <p className="text-md font-semibold text-blue-800">
+            {schedules.length} agendamento(s) encontrado(s) com os filtros
+            atuais.
           </p>
         </div>
       )}

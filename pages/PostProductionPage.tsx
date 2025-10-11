@@ -585,7 +585,7 @@ const PostProductionPage: React.FC = () => {
 
         <button
           onClick={handleApplyFilters}
-          className="w-full bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors text-sm font-medium"
+          className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
         >
           Filtrar
         </button>
@@ -596,6 +596,15 @@ const PostProductionPage: React.FC = () => {
           Limpar
         </button>
       </div>
+
+      {!isLoading && filteredTasks.length > 0 && (
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-md font-semibold text-blue-800">
+            {filteredTasks.length} tarefa(s) encontrada(s) com os filtros
+            atuais.
+          </p>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="text-center py-10">Carregando tarefas...</div>
