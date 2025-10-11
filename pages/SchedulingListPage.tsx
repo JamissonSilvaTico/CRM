@@ -130,7 +130,7 @@ const SchedulingModal: React.FC<{
               onChange={handleCustomerChange}
               placeholder="Digite ou selecione o nome do cliente"
               required
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition"
+              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm transition"
             />
             <datalist id="customer-list">
               {customers.map((customer) => (
@@ -154,7 +154,7 @@ const SchedulingModal: React.FC<{
               value={formData.sessionType}
               onChange={handleChange}
               required
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
             >
               {Object.values(SessionType).map((type) => (
                 <option key={type} value={type}>
@@ -185,7 +185,7 @@ const SchedulingModal: React.FC<{
               rows={4}
               value={formData.observacao || ""}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition"
+              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm transition"
               placeholder="Adicione observações sobre o agendamento..."
             />
           </div>
@@ -352,7 +352,7 @@ const SchedulingListPage: React.FC = () => {
           name="month"
           value={filters.month}
           onChange={handleFilterChange}
-          className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm rounded-md"
         >
           <option value="">Mês</option>
           {months.map((m) => (
@@ -365,7 +365,7 @@ const SchedulingListPage: React.FC = () => {
           name="year"
           value={filters.year}
           onChange={handleFilterChange}
-          className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm rounded-md"
         >
           <option value="">Ano</option>
           {years.map((y) => (
@@ -378,7 +378,7 @@ const SchedulingListPage: React.FC = () => {
           name="sessionType"
           value={filters.sessionType}
           onChange={handleFilterChange}
-          className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm rounded-md"
         >
           <option value="">Tipo de Ensaio</option>
           {Object.values(SessionType).map((type) => (
@@ -403,7 +403,7 @@ const SchedulingListPage: React.FC = () => {
 
       {!isLoading && schedules.length > 0 && (
         <div className="mb-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-          <p className="text-md font-semibold text-blue-800">
+          <p className="text-md font-semibold text-gray-800">
             {schedules.length} agendamento(s) encontrado(s) com os filtros
             atuais.
           </p>
@@ -420,7 +420,7 @@ const SchedulingListPage: React.FC = () => {
               className="bg-white rounded-lg shadow-md p-5 flex flex-col justify-between transition-all hover:shadow-xl hover:-translate-y-1"
             >
               <div>
-                <h3 className="text-xl font-bold text-blue-700">
+                <h3 className="text-xl font-bold text-gray-700">
                   {schedule.customerName}
                 </h3>
                 <p className="text-sm text-gray-600 mt-1">
@@ -440,7 +440,7 @@ const SchedulingListPage: React.FC = () => {
               <div className="mt-4 pt-4 border-t flex justify-end space-x-2">
                 <button
                   onClick={() => openModalForEdit(schedule)}
-                  className="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-100 rounded-md hover:bg-blue-200"
+                  className="px-3 py-1 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200"
                 >
                   Editar
                 </button>
