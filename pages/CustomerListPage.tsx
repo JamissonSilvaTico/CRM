@@ -233,7 +233,7 @@ const CustomerModal: React.FC<{
                   id="numChildren"
                   value={numChildren}
                   onChange={handleNumChildrenChange}
-                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
                 >
                   {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
                     <option key={n} value={n}>
@@ -325,7 +325,7 @@ const CustomerCard: React.FC<{
 }> = ({ customer, onDelete, onEdit, birthdayMonth }) => (
   <div className="bg-white rounded-lg shadow-md p-5 flex flex-col justify-between transition-all hover:shadow-xl hover:-translate-y-1">
     <div>
-      <h3 className="text-xl font-bold text-gray-900 flex items-center">
+      <h3 className="text-xl font-bold text-gray-700 flex items-center">
         {customer.preferredName || customer.fullName}
         <BirthdayIndicator dob={customer.dob} filterMonth={birthdayMonth} />
       </h3>
@@ -388,7 +388,7 @@ const CustomerCard: React.FC<{
     <div className="mt-4 pt-4 border-t flex justify-end space-x-2">
       <button
         onClick={() => onEdit(customer)}
-        className="px-3 py-1 text-sm font-medium text-blue-600 bg-blue-100 rounded-md hover:bg-blue-200 transition-colors"
+        className="px-3 py-1 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
       >
         Editar
       </button>
@@ -489,6 +489,7 @@ const CustomerListPage: React.FC = () => {
   const handleClearFilters = () => {
     const clearedFilters = { month: "" };
     setFilters(clearedFilters);
+    setSearchTerm("");
     fetchCustomers(clearedFilters);
   };
 
@@ -526,7 +527,7 @@ const CustomerListPage: React.FC = () => {
         <h2 className="text-2xl font-bold text-gray-900">Gestão de Clientes</h2>
         <Button
           onClick={openModalForNew}
-          className="!w-auto bg-gray-800 hover:bg-gray-900"
+          className="!w-auto bg-green-600 hover:bg-green-700"
         >
           + Novo Cliente
         </Button>
@@ -547,7 +548,7 @@ const CustomerListPage: React.FC = () => {
             name="month"
             value={filters.month}
             onChange={handleFilterChange}
-            className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+            className="w-full text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
           >
             <option value="">Aniversariantes do Mês</option>
             {months.map((m) => (
@@ -558,7 +559,7 @@ const CustomerListPage: React.FC = () => {
           </select>
           <button
             onClick={handleApplyFilters}
-            className="w-full bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900 transition-colors text-sm font-medium"
+            className="w-full bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors text-sm font-medium"
           >
             Filtrar
           </button>
@@ -570,6 +571,16 @@ const CustomerListPage: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {!isLoading && filteredCustomers.length > 0 && (
+        <div className="mb-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <p className="text-md font-semibold text-gray-800">
+            {filters.month
+              ? `${filteredCustomers.length} aniversariante(s) encontrado(s).`
+              : `${filteredCustomers.length} cliente(s) encontrado(s).`}
+          </p>
+        </div>
+      )}
 
       {isLoading ? (
         <div className="text-center py-10">
