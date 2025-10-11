@@ -136,7 +136,7 @@ const TaskCard: React.FC<{
       <div className="mt-4 pt-4 border-t flex justify-end space-x-2">
         <button
           onClick={() => onEdit(task)}
-          className="text-blue-600 hover:text-blue-800 transition-colors"
+          className="text-gray-600 hover:text-gray-800 transition-colors"
           aria-label={`Editar tarefa de ${task.cliente}`}
         >
           <svg
@@ -281,7 +281,7 @@ const TaskModal: React.FC<{
               value={formData.servico}
               onChange={handleChange}
               required
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
             >
               {SERVICOS.map((s) => (
                 <option key={s} value={s}>
@@ -325,7 +325,7 @@ const TaskModal: React.FC<{
               value={formData.status}
               onChange={handleChange}
               required
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
             >
               {STATUS_OPTIONS.map((s) => (
                 <option key={s} value={s}>
@@ -367,7 +367,7 @@ const TaskModal: React.FC<{
               rows={3}
               value={formData.observacao || ""}
               onChange={handleChange}
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
               placeholder="Adicione observações sobre a tarefa..."
             />
           </div>
@@ -531,7 +531,7 @@ const PostProductionPage: React.FC = () => {
           name="status"
           value={filters.status}
           onChange={handleFilterChange}
-          className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm rounded-md"
         >
           <option value="">Status</option>
           {STATUS_OPTIONS.map((s) => (
@@ -545,7 +545,7 @@ const PostProductionPage: React.FC = () => {
           name="servico"
           value={filters.servico}
           onChange={handleFilterChange}
-          className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
         >
           <option value="">Serviço</option>
           {SERVICOS.map((s) => (
@@ -559,7 +559,7 @@ const PostProductionPage: React.FC = () => {
           name="mes"
           value={filters.mes}
           onChange={handleFilterChange}
-          className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
         >
           <option value="">Mês de Entrega</option>
           {MESES.map((m, i) => (
@@ -573,7 +573,7 @@ const PostProductionPage: React.FC = () => {
           name="prioridade"
           value={filters.prioridade}
           onChange={handleFilterChange}
-          className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
         >
           <option value="">Prioridade</option>
           {priorityOptions.map((p) => (
@@ -585,7 +585,7 @@ const PostProductionPage: React.FC = () => {
 
         <button
           onClick={handleApplyFilters}
-          className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+          className="w-full bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors text-sm font-medium"
         >
           Filtrar
         </button>
@@ -598,8 +598,8 @@ const PostProductionPage: React.FC = () => {
       </div>
 
       {!isLoading && filteredTasks.length > 0 && (
-        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-md font-semibold text-blue-800">
+        <div className="mb-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+          <p className="text-md font-semibold text-gray-800">
             {filteredTasks.length} tarefa(s) encontrada(s) com os filtros
             atuais.
           </p>
