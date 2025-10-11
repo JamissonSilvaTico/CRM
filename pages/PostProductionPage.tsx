@@ -37,6 +37,7 @@ const PRIORIDADES = {
   BAIXA: { label: "Baixa", color: "#457b9d", days: 6 },
   NENHUMA: { label: "Normal", color: "#6c757d", days: Infinity },
 };
+const priorityOptions = ["Urgente", "Média", "Baixa", "Normal"];
 
 const getPriority = (task: Task) => {
   if (task.status === "Finalizado") return PRIORIDADES.NENHUMA;
@@ -105,6 +106,11 @@ const TaskCard: React.FC<{
           {task.armazenadoHD && (
             <p>
               <strong>Armazenado em:</strong> {task.armazenadoHD}
+            </p>
+          )}
+          {task.observacao && (
+            <p>
+              <strong>Observação:</strong> {task.observacao}
             </p>
           )}
         </div>
@@ -180,6 +186,7 @@ const TaskModal: React.FC<{
     status: STATUS_OPTIONS[0],
     armazenadoHD: "",
     minFotos: undefined,
+    observacao: "",
   };
   const [formData, setFormData] = useState<TaskFormData>(initialFormData);
   const [id, setId] = useState<string | undefined>(undefined);
@@ -199,6 +206,7 @@ const TaskModal: React.FC<{
             .split("T")[0],
           armazenadoHD: taskToEdit.armazenadoHD || "",
           minFotos: taskToEdit.minFotos,
+          observacao: taskToEdit.observacao || "",
         });
       } else {
         setId(undefined);
@@ -210,7 +218,9 @@ const TaskModal: React.FC<{
   if (!isOpen) return null;
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value, type } = e.target;
     if (type === "checkbox") {
@@ -235,7 +245,7 @@ const TaskModal: React.FC<{
       aria-modal="true"
     >
       <div
-        className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md"
+        className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-bold text-gray-900 mb-6 border-b pb-4">
@@ -344,6 +354,23 @@ const TaskModal: React.FC<{
               placeholder="Ex: HD Externo 01"
             />
           </div>
+          <div>
+            <label
+              htmlFor="observacao"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Observação
+            </label>
+            <textarea
+              id="observacao"
+              name="observacao"
+              rows={3}
+              value={formData.observacao || ""}
+              onChange={handleChange}
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+              placeholder="Adicione observações sobre a tarefa..."
+            />
+          </div>
 
           <div className="pt-4 flex justify-end space-x-2">
             <button
@@ -369,34 +396,37 @@ const PostProductionPage: React.FC = () => {
   >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filters, setFilters] = useState({ status: "", servico: "", mes: "" });
+  const [filters, setFilters] = useState({
+    status: "",
+    servico: "",
+    mes: "",
+    prioridade: "",
+  });
 
-  const fetchTasks = useCallback(async (currentFilters: typeof filters) => {
-    setIsLoading(true);
-    setError("");
-    try {
-      // O mês no frontend original é 0-based, mas a rota de API espera o mês 1-12.
-      // Entretanto, a nova rota task.routes.js espera um índice de array 0-based.
-      // O filtro de mês original em index.tsx mapeia 'i' (0-11) para o filtro, que a rota de backend traduz.
-      // Vamos manter 'mes' como string '0' a '11' no frontend para simplificar a passagem de valor do <select>.
-      const params = {
-        status: currentFilters.status || undefined,
-        servico: currentFilters.servico || undefined,
-        // O valor do filtro é o índice do array MESES (0 a 11), que é o mês 0-based
-        mes: currentFilters.mes || undefined,
-      };
-      const data = await getTasks(params);
-      setTasks(data);
-    } catch (err) {
-      setError("Falha ao carregar tarefas.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const fetchTasks = useCallback(
+    async (currentFilters: Omit<typeof filters, "prioridade">) => {
+      setIsLoading(true);
+      setError("");
+      try {
+        const params = {
+          status: currentFilters.status || undefined,
+          servico: currentFilters.servico || undefined,
+          mes: currentFilters.mes || undefined,
+        };
+        const data = await getTasks(params);
+        setTasks(data);
+      } catch (err) {
+        setError("Falha ao carregar tarefas.");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
-    fetchTasks(filters);
-  }, [fetchTasks, filters]);
+    fetchTasks({ status: "", servico: "", mes: "" });
+  }, [fetchTasks]);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -408,7 +438,12 @@ const PostProductionPage: React.FC = () => {
   };
 
   const handleClearFilters = () => {
-    const clearedFilters = { status: "", servico: "", mes: "" };
+    const clearedFilters = {
+      status: "",
+      servico: "",
+      mes: "",
+      prioridade: "",
+    };
     setFilters(clearedFilters);
     fetchTasks(clearedFilters);
   };
@@ -427,8 +462,6 @@ const PostProductionPage: React.FC = () => {
     try {
       const payload = {
         ...taskData,
-        // FIX: The type of `taskData.minFotos` is `number | undefined`, but it can be a string from the form.
-        // Cast to `any` to avoid a compile error and use `== null` to check for both `null` and `undefined`.
         minFotos:
           (taskData.minFotos as any) === "" || taskData.minFotos == null
             ? undefined
@@ -439,7 +472,6 @@ const PostProductionPage: React.FC = () => {
       } else {
         await addTask(payload);
       }
-      // Recarrega a lista após a operação
       fetchTasks(filters);
     } catch (error) {
       console.error("Failed to save task", error);
@@ -451,14 +483,21 @@ const PostProductionPage: React.FC = () => {
     if (window.confirm("Tem certeza que deseja excluir esta tarefa?")) {
       try {
         await deleteTask(id);
-        fetchTasks(filters); // Recarrega a lista
+        fetchTasks(filters);
       } catch (err) {
         setError("Falha ao excluir a tarefa. Tente novamente.");
       }
     }
   };
 
-  // A ordenação por data de entrega ascendente é feita no backend (task.routes.js)
+  const filteredTasks = useMemo(() => {
+    if (!filters.prioridade) {
+      return tasks;
+    }
+    return tasks.filter(
+      (task) => getPriority(task).label === filters.prioridade
+    );
+  }, [tasks, filters.prioridade]);
 
   return (
     <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg">
@@ -468,7 +507,7 @@ const PostProductionPage: React.FC = () => {
         </h1>
         <Button
           onClick={openModalForNew}
-          className="!w-auto bg-gray-800 hover:bg-gray-900"
+          className="!w-auto bg-green-600 hover:bg-green-700"
         >
           + Nova Tarefa
         </Button>
@@ -483,8 +522,8 @@ const PostProductionPage: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6 p-4 border rounded-md bg-gray-50 items-center">
-        <h2 className="text-lg font-semibold text-gray-800 col-span-full md:col-span-1 lg:col-span-5 mb-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6 p-4 border rounded-md bg-gray-50 items-center">
+        <h2 className="text-lg font-semibold text-gray-800 col-span-full xl:col-span-6 mb-0">
           Filtros
         </h2>
 
@@ -530,9 +569,23 @@ const PostProductionPage: React.FC = () => {
           ))}
         </select>
 
+        <select
+          name="prioridade"
+          value={filters.prioridade}
+          onChange={handleFilterChange}
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+        >
+          <option value="">Prioridade</option>
+          {priorityOptions.map((p) => (
+            <option key={p} value={p}>
+              {p}
+            </option>
+          ))}
+        </select>
+
         <button
           onClick={handleApplyFilters}
-          className="w-full bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900 transition-colors text-sm font-medium"
+          className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
         >
           Filtrar
         </button>
@@ -546,9 +599,9 @@ const PostProductionPage: React.FC = () => {
 
       {isLoading ? (
         <div className="text-center py-10">Carregando tarefas...</div>
-      ) : tasks.length > 0 ? (
+      ) : filteredTasks.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tasks.map((task) => (
+          {filteredTasks.map((task) => (
             <TaskCard
               key={task.id}
               task={task as Task & { id: string }}
@@ -560,7 +613,9 @@ const PostProductionPage: React.FC = () => {
       ) : (
         <div className="text-center py-10 bg-gray-50 rounded-md">
           <p className="text-gray-600">
-            Nenhuma tarefa encontrada com os filtros selecionados.
+            {tasks.length === 0
+              ? "Nenhuma tarefa cadastrada."
+              : "Nenhuma tarefa encontrada com os filtros selecionados."}
           </p>
         </div>
       )}

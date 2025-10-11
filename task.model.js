@@ -10,6 +10,10 @@ const serviceTypes = [
   "Perfil Profissional",
   "Smash the cake",
   "Selebration",
+  "Sessão especial",
+  "Natal",
+  "Dia dos Pais",
+  "Dia das mães",
 ];
 
 const statusOptions = ["Não iniciado", "Em andamento", "Finalizado"];
@@ -29,6 +33,7 @@ const taskSchema = new mongoose.Schema(
     },
     armazenadoHD: { type: String },
     minFotos: { type: Number },
+    observacao: { type: String },
   },
   { timestamps: true }
 );

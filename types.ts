@@ -35,9 +35,6 @@ export enum SessionType {
   NEWBORN = "Newborn",
   SMASH_THE_CAKE = "Smash the Cake",
   SESSAO_ESPECIAL = "Sessão Especial",
-  NATAL = "Natal",
-  DIA_DOS_PAIS = "Dia dos Pais",
-  DIA_DAS_MAES = "Dia das Mães",
 }
 
 export interface Scheduling {
@@ -62,6 +59,10 @@ export enum TaskServiceType {
   PERFIL_PROFISSIONAL = "Perfil Profissional",
   SMASH_THE_CAKE = "Smash the cake",
   SELEBRATION = "Selebration",
+  SESSAO_ESPECIAL = "Sessão especial",
+  NATAL = "Natal",
+  DIA_DOS_PAIS = "Dia dos Pais",
+  DIA_DAS_MAES = "Dia das mães",
 }
 
 export type TaskStatus = "Não iniciado" | "Em andamento" | "Finalizado";
@@ -76,6 +77,7 @@ export interface Task {
   status: TaskStatus;
   armazenadoHD?: string;
   minFotos?: number;
+  observacao?: string;
 }
 
 export type TaskFormData = Omit<Task, "id">;
