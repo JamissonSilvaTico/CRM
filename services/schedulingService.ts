@@ -6,6 +6,7 @@ interface GetSchedulesParams {
   month?: string;
   year?: string;
   sessionType?: string;
+  indicacao?: string;
 }
 
 export const getSchedules = async (
@@ -15,6 +16,7 @@ export const getSchedules = async (
   if (params.month) query.append("month", params.month);
   if (params.year) query.append("year", params.year);
   if (params.sessionType) query.append("sessionType", params.sessionType);
+  if (params.indicacao) query.append("indicacao", params.indicacao);
 
   try {
     const response = await fetch(`${API_BASE_URL}?${query.toString()}`);
