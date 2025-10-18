@@ -10,43 +10,46 @@ router.get("/", async (req, res) => {
       req.query;
     const filter = {};
 
+    // Apply simple string-based filters
     if (sessionType) {
       filter.sessionType = sessionType;
     }
-
     if (indicacao) {
       filter.indicacao = { $regex: indicacao, $options: "i" };
     }
-
     if (paymentStatus) {
       filter.paymentStatus = paymentStatus;
     }
-
     if (shootStatus) {
       filter.shootStatus = shootStatus;
     }
 
-    if (year) {
-      const yearInt = parseInt(year, 10);
-      if (month) {
-        const monthInt = parseInt(month, 10) - 1; // 0-11
-        const startDate = new Date(Date.UTC(yearInt, monthInt, 1));
+    // Apply date-based filters
+    const yearNum = parseInt(year, 10);
+    const monthNum = parseInt(month, 10);
+
+    if (!isNaN(yearNum)) {
+      if (!isNaN(monthNum)) {
+        // Both year and month are provided
+        const monthIndex = monthNum - 1; // JS Date months are 0-11
+        const startDate = new Date(Date.UTC(yearNum, monthIndex, 1));
         const endDate = new Date(
-          Date.UTC(yearInt, monthInt + 1, 0, 23, 59, 59, 999)
+          Date.UTC(yearNum, monthIndex + 1, 0, 23, 59, 59, 999)
         );
         filter.date = { $gte: startDate, $lte: endDate };
       } else {
-        const startDate = new Date(Date.UTC(yearInt, 0, 1));
-        const endDate = new Date(Date.UTC(yearInt, 11, 31, 23, 59, 59, 999));
+        // Only year is provided
+        const startDate = new Date(Date.UTC(yearNum, 0, 1));
+        const endDate = new Date(Date.UTC(yearNum, 11, 31, 23, 59, 59, 999));
         filter.date = { $gte: startDate, $lte: endDate };
       }
-    } else if (month) {
-      // If only month is provided, filter for that month in the current year.
-      const yearInt = new Date().getFullYear();
-      const monthInt = parseInt(month, 10) - 1;
-      const startDate = new Date(Date.UTC(yearInt, monthInt, 1));
+    } else if (!isNaN(monthNum)) {
+      // Only month is provided, so use the current year
+      const currentYear = new Date().getFullYear();
+      const monthIndex = monthNum - 1;
+      const startDate = new Date(Date.UTC(currentYear, monthIndex, 1));
       const endDate = new Date(
-        Date.UTC(yearInt, monthInt + 1, 0, 23, 59, 59, 999)
+        Date.UTC(currentYear, monthIndex + 1, 0, 23, 59, 59, 999)
       );
       filter.date = { $gte: startDate, $lte: endDate };
     }
