@@ -20,6 +20,12 @@ const sessionTypes = [
 const paymentStatusOptions = ["Pendente", "Entrada Paga", "Pago Integralmente"];
 const paymentMethodOptions = ["Dinheiro", "Pix", "Débito", "Crédito"];
 
+const shootStatusOptions = [
+  "Ensaio Pendente",
+  "Ensaio Realizado",
+  "Ensaio Cancelado",
+];
+
 const schedulingSchema = new mongoose.Schema(
   {
     customerId: {
@@ -40,6 +46,12 @@ const schedulingSchema = new mongoose.Schema(
     },
     entryValue: { type: Number },
     paymentMethod: { type: String, enum: paymentMethodOptions },
+    shootStatus: {
+      type: String,
+      required: true,
+      enum: shootStatusOptions,
+      default: "Ensaio Pendente",
+    },
   },
   { timestamps: true }
 );
