@@ -73,6 +73,10 @@ const TaskCard: React.FC<{
   onDelete: (id: string) => void;
 }> = ({ task, onEdit, onDelete }) => {
   const priority = getPriority(task);
+  const isFinalizado = task.status === "Finalizado";
+  const displayColor = isFinalizado ? "#16a34a" : priority.color; // Tailwind green-600
+  const displayLabel = isFinalizado ? "Finalizado" : priority.label;
+
   const title = `${task.cliente} ${
     task.filho && task.filho.toLowerCase() !== "n/a" ? `(${task.filho})` : ""
   }`;
@@ -82,7 +86,7 @@ const TaskCard: React.FC<{
       {/* Indicador de Prioridade Lateral */}
       <div
         className="absolute top-0 left-0 w-1 h-full"
-        style={{ backgroundColor: priority.color }}
+        style={{ backgroundColor: displayColor }}
       ></div>
 
       <div className="pl-3">
@@ -92,7 +96,7 @@ const TaskCard: React.FC<{
         </p>
         <p className="text-sm text-gray-700">
           <strong>Status:</strong>{" "}
-          <span style={{ fontWeight: "bold", color: priority.color }}>
+          <span style={{ fontWeight: "bold", color: displayColor }}>
             {task.status}
           </span>
         </p>
@@ -126,10 +130,10 @@ const TaskCard: React.FC<{
 
         <div className="mt-3">
           <span
-            style={{ backgroundColor: priority.color }}
+            style={{ backgroundColor: displayColor }}
             className="text-white px-2 py-1 rounded-full text-xs font-semibold"
           >
-            {priority.label}
+            {displayLabel}
           </span>
         </div>
       </div>
