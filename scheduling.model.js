@@ -19,16 +19,11 @@ const sessionTypes = [
 
 const schedulingSchema = new mongoose.Schema(
   {
-    customerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
-      required: false,
-    },
+    customerId: { type: mongoose.Schema.Types.ObjectId, ref: "Customer" },
     customerName: { type: String, required: true },
     sessionType: { type: String, required: true, enum: sessionTypes },
     date: { type: Date, required: true },
     observacao: { type: String },
-    indicacao: { type: String },
   },
   { timestamps: true }
 );

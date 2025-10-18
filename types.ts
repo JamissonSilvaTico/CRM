@@ -47,7 +47,6 @@ export interface Scheduling {
   sessionType: SessionType;
   date: string; // ISO String format
   observacao?: string;
-  indicacao?: string;
 }
 
 export type SchedulingFormData = Omit<Scheduling, "id">;

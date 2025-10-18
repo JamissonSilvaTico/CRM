@@ -23,7 +23,6 @@ const SchedulingModal: React.FC<{
     sessionType: Object.values(SessionType)[0],
     date: "",
     observacao: "",
-    indicacao: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -37,7 +36,6 @@ const SchedulingModal: React.FC<{
           sessionType: scheduleToEdit.sessionType,
           date: new Date(scheduleToEdit.date).toISOString().split("T")[0],
           observacao: scheduleToEdit.observacao || "",
-          indicacao: scheduleToEdit.indicacao || "",
         });
       } else {
         setFormData({
@@ -45,7 +43,6 @@ const SchedulingModal: React.FC<{
           sessionType: Object.values(SessionType)[0],
           date: "",
           observacao: "",
-          indicacao: "",
         });
       }
       setErrorMessage("");
@@ -175,14 +172,6 @@ const SchedulingModal: React.FC<{
             onChange={handleChange}
             required
           />
-          <Input
-            label="Indicação"
-            id="indicacao"
-            name="indicacao"
-            value={formData.indicacao || ""}
-            onChange={handleChange}
-            placeholder="Quem indicou este cliente?"
-          />
           <div>
             <label
               htmlFor="observacao"
@@ -227,7 +216,6 @@ const SchedulingListPage: React.FC = () => {
     month: "",
     year: "",
     sessionType: "",
-    indicacao: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<Scheduling | null>(
@@ -242,7 +230,6 @@ const SchedulingListPage: React.FC = () => {
         month: currentFilters.month || undefined,
         year: currentFilters.year || undefined,
         sessionType: currentFilters.sessionType || undefined,
-        indicacao: currentFilters.indicacao || undefined,
       };
       const scheduleData = await getSchedules(params);
       setSchedules(scheduleData);
@@ -270,21 +257,14 @@ const SchedulingListPage: React.FC = () => {
     fetchInitialData();
   }, [fetchSchedules]);
 
-  const handleFilterChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setFilters((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleApplyFilters = () => fetchSchedules(filters);
 
   const handleClearFilters = () => {
-    const clearedFilters = {
-      month: "",
-      year: "",
-      sessionType: "",
-      indicacao: "",
-    };
+    const clearedFilters = { month: "", year: "", sessionType: "" };
     setFilters(clearedFilters);
     fetchSchedules(clearedFilters);
   };
@@ -367,7 +347,7 @@ const SchedulingListPage: React.FC = () => {
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6 p-4 border rounded-md bg-gray-50 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6 p-4 border rounded-md bg-gray-50 items-center">
         <select
           name="month"
           value={filters.month}
@@ -407,13 +387,6 @@ const SchedulingListPage: React.FC = () => {
             </option>
           ))}
         </select>
-        <input
-          name="indicacao"
-          placeholder="Pesquisar por indicação"
-          value={filters.indicacao}
-          onChange={handleFilterChange}
-          className="w-full text-base border-gray-300 focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm rounded-md px-3 py-2 bg-white shadow-sm"
-        />
         <button
           onClick={handleApplyFilters}
           className="w-full bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
@@ -453,11 +426,6 @@ const SchedulingListPage: React.FC = () => {
                 <p className="text-sm text-gray-600 mt-1">
                   {schedule.sessionType}
                 </p>
-                {schedule.indicacao && (
-                  <p className="text-sm text-gray-500 mt-2">
-                    <strong>Indicação:</strong> {schedule.indicacao}
-                  </p>
-                )}
                 {schedule.observacao && (
                   <p className="text-sm text-gray-500 mt-2 italic whitespace-pre-wrap">
                     <strong>Obs:</strong> {schedule.observacao}
