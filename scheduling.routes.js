@@ -28,14 +28,26 @@ router.get("/", async (req, res) => {
 
     if (year) {
       const yearInt = parseInt(year, 10);
-      const monthInt = month ? parseInt(month, 10) - 1 : 0;
-
+      if (month) {
+        const monthInt = parseInt(month, 10) - 1; // 0-11
+        const startDate = new Date(Date.UTC(yearInt, monthInt, 1));
+        const endDate = new Date(
+          Date.UTC(yearInt, monthInt + 1, 0, 23, 59, 59, 999)
+        );
+        filter.date = { $gte: startDate, $lte: endDate };
+      } else {
+        const startDate = new Date(Date.UTC(yearInt, 0, 1));
+        const endDate = new Date(Date.UTC(yearInt, 11, 31, 23, 59, 59, 999));
+        filter.date = { $gte: startDate, $lte: endDate };
+      }
+    } else if (month) {
+      // If only month is provided, filter for that month in the current year.
+      const yearInt = new Date().getFullYear();
+      const monthInt = parseInt(month, 10) - 1;
       const startDate = new Date(Date.UTC(yearInt, monthInt, 1));
-
-      const endDate = month
-        ? new Date(Date.UTC(yearInt, monthInt + 1, 0, 23, 59, 59, 999))
-        : new Date(Date.UTC(yearInt, 11, 31, 23, 59, 59, 999));
-
+      const endDate = new Date(
+        Date.UTC(yearInt, monthInt + 1, 0, 23, 59, 59, 999)
+      );
       filter.date = { $gte: startDate, $lte: endDate };
     }
 
