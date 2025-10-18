@@ -7,7 +7,12 @@ import {
 } from "../services/schedulingService";
 import { getCustomers } from "../services/customerService";
 import type { Scheduling, SchedulingFormData, Customer } from "../types";
-import { SessionType, PaymentStatus, PaymentMethod, ShootStatus } from "../types";
+import {
+  SessionType,
+  PaymentStatus,
+  PaymentMethod,
+  ShootStatus,
+} from "../types";
 import Input from "../components/Input";
 import Button from "../components/Button";
 
@@ -338,29 +343,26 @@ const SchedulingListPage: React.FC = () => {
     null
   );
 
-  const fetchSchedules = useCallback(
-    async (currentFilters: typeof filters) => {
-      setIsLoading(true);
-      setError("");
-      try {
-        const params = {
-          month: currentFilters.month || undefined,
-          year: currentFilters.year || undefined,
-          sessionType: currentFilters.sessionType || undefined,
-          indicacao: currentFilters.indicacao || undefined,
-          paymentStatus: currentFilters.paymentStatus || undefined,
-          shootStatus: currentFilters.shootStatus || undefined,
-        };
-        const scheduleData = await getSchedules(params);
-        setSchedules(scheduleData);
-      } catch (err) {
-        setError("Falha ao carregar agendamentos.");
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    []
-  );
+  const fetchSchedules = useCallback(async (currentFilters: typeof filters) => {
+    setIsLoading(true);
+    setError("");
+    try {
+      const params = {
+        month: currentFilters.month || undefined,
+        year: currentFilters.year || undefined,
+        sessionType: currentFilters.sessionType || undefined,
+        indicacao: currentFilters.indicacao || undefined,
+        paymentStatus: currentFilters.paymentStatus || undefined,
+        shootStatus: currentFilters.shootStatus || undefined,
+      };
+      const scheduleData = await getSchedules(params);
+      setSchedules(scheduleData);
+    } catch (err) {
+      setError("Falha ao carregar agendamentos.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -376,7 +378,10 @@ const SchedulingListPage: React.FC = () => {
       } finally {
         setIsLoading(false);
       }
-    }, [fetchSchedules]); // Added fetchSchedules to dependency array
+    };
+
+    fetchInitialData();
+  }, [fetchSchedules]);
 
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
