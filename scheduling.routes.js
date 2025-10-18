@@ -8,55 +8,55 @@ router.get("/", async (req, res) => {
   try {
     const { month, year, sessionType, indicacao, paymentStatus, shootStatus } =
       req.query;
-    const filter = {};
 
-    // Apply simple string-based filters
+    const queryConditions = [];
+
+    // Add string-based filters to the conditions array
     if (sessionType) {
-      filter.sessionType = sessionType;
+      queryConditions.push({ sessionType: sessionType });
     }
     if (indicacao) {
-      filter.indicacao = { $regex: indicacao, $options: "i" };
+      queryConditions.push({ indicacao: { $regex: indicacao, $options: "i" } });
     }
     if (paymentStatus) {
-      filter.paymentStatus = paymentStatus;
+      queryConditions.push({ paymentStatus: paymentStatus });
     }
     if (shootStatus) {
-      filter.shootStatus = shootStatus;
+      queryConditions.push({ shootStatus: shootStatus });
     }
 
-    // Apply date-based filters
+    // Handle date filters
     const yearNum = parseInt(year, 10);
     const monthNum = parseInt(month, 10);
 
-    if (!isNaN(yearNum)) {
+    if (!isNaN(yearNum) || !isNaN(monthNum)) {
+      let dateFilter = {};
+      let targetYear = !isNaN(yearNum) ? yearNum : new Date().getFullYear();
+
       if (!isNaN(monthNum)) {
-        // Both year and month are provided
+        // Filter by specific month and year
         const monthIndex = monthNum - 1; // JS Date months are 0-11
-        const startDate = new Date(Date.UTC(yearNum, monthIndex, 1));
+        const startDate = new Date(Date.UTC(targetYear, monthIndex, 1));
         const endDate = new Date(
-          Date.UTC(yearNum, monthIndex + 1, 0, 23, 59, 59, 999)
+          Date.UTC(targetYear, monthIndex + 1, 0, 23, 59, 59, 999)
         );
-        filter.date = { $gte: startDate, $lte: endDate };
+        dateFilter = { $gte: startDate, $lte: endDate };
       } else {
-        // Only year is provided
-        const startDate = new Date(Date.UTC(yearNum, 0, 1));
-        const endDate = new Date(Date.UTC(yearNum, 11, 31, 23, 59, 59, 999));
-        filter.date = { $gte: startDate, $lte: endDate };
+        // Filter by entire year
+        const startDate = new Date(Date.UTC(targetYear, 0, 1));
+        const endDate = new Date(Date.UTC(targetYear, 11, 31, 23, 59, 59, 999));
+        dateFilter = { $gte: startDate, $lte: endDate };
       }
-    } else if (!isNaN(monthNum)) {
-      // Only month is provided, so use the current year
-      const currentYear = new Date().getFullYear();
-      const monthIndex = monthNum - 1;
-      const startDate = new Date(Date.UTC(currentYear, monthIndex, 1));
-      const endDate = new Date(
-        Date.UTC(currentYear, monthIndex + 1, 0, 23, 59, 59, 999)
-      );
-      filter.date = { $gte: startDate, $lte: endDate };
+      queryConditions.push({ date: dateFilter });
     }
+
+    // Build the final filter object. Use $and if multiple conditions exist.
+    const filter = queryConditions.length > 0 ? { $and: queryConditions } : {};
 
     const schedules = await Scheduling.find(filter)
       .sort({ date: 1 })
       .populate("customerId");
+
     res.json(schedules);
   } catch (err) {
     res
