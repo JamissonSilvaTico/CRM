@@ -40,6 +40,19 @@ export enum SessionType {
   DIA_DAS_MAES = "Dia das Mães",
 }
 
+export enum PaymentStatus {
+  PENDENTE = "Pendente",
+  ENTRADA_PAGA = "Entrada Paga",
+  PAGO_INTEGRALMENTE = "Pago Integralmente",
+}
+
+export enum PaymentMethod {
+  DINHEIRO = "Dinheiro",
+  PIX = "Pix",
+  DEBITO = "Débito",
+  CREDITO = "Crédito",
+}
+
 export interface Scheduling {
   id: string;
   customerId?: string;
@@ -48,6 +61,9 @@ export interface Scheduling {
   date: string; // ISO String format
   observacao?: string;
   indicacao?: string;
+  paymentStatus: PaymentStatus;
+  entryValue?: number;
+  paymentMethod?: PaymentMethod;
 }
 
 export type SchedulingFormData = Omit<Scheduling, "id">;

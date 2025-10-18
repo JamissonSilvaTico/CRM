@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 // GET all schedules with optional filters
 router.get("/", async (req, res) => {
   try {
-    const { month, year, sessionType, indicacao } = req.query;
+    const { month, year, sessionType, indicacao, paymentStatus } = req.query;
     const filter = {};
 
     if (sessionType) {
@@ -15,6 +15,10 @@ router.get("/", async (req, res) => {
 
     if (indicacao) {
       filter.indicacao = { $regex: indicacao, $options: "i" };
+    }
+
+    if (paymentStatus) {
+      filter.paymentStatus = paymentStatus;
     }
 
     if (year) {
@@ -61,8 +65,17 @@ router.get("/:id", async (req, res) => {
 
 // POST a new schedule
 router.post("/", async (req, res) => {
-  const { customerId, customerName, sessionType, date, observacao, indicacao } =
-    req.body;
+  const {
+    customerId,
+    customerName,
+    sessionType,
+    date,
+    observacao,
+    indicacao,
+    paymentStatus,
+    entryValue,
+    paymentMethod,
+  } = req.body;
 
   if (!customerName || !sessionType || !date) {
     return res
@@ -76,6 +89,9 @@ router.post("/", async (req, res) => {
     date,
     observacao,
     indicacao,
+    paymentStatus,
+    entryValue,
+    paymentMethod,
   };
   // Only associate with a customer if a valid ID is provided
   if (customerId && mongoose.Types.ObjectId.isValid(customerId)) {
@@ -115,6 +131,16 @@ router.put("/:id", async (req, res) => {
         ops.$unset = { customerId: 1 };
       }
       delete updateData.customerId;
+    }
+
+    // Payment logic: unset fields that are no longer relevant based on status
+    if (updateData.paymentStatus === "Pendente") {
+      ops.$unset = { ...ops.$unset, entryValue: 1, paymentMethod: 1 };
+      delete updateData.entryValue;
+      delete updateData.paymentMethod;
+    } else if (updateData.paymentStatus === "Pago Integralmente") {
+      ops.$unset = { ...ops.$unset, entryValue: 1 };
+      delete updateData.entryValue;
     }
 
     ops.$set = { ...ops.$set, ...updateData };

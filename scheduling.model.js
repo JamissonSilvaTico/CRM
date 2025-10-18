@@ -17,6 +17,9 @@ const sessionTypes = [
   "Dia das Mães",
 ];
 
+const paymentStatusOptions = ["Pendente", "Entrada Paga", "Pago Integralmente"];
+const paymentMethodOptions = ["Dinheiro", "Pix", "Débito", "Crédito"];
+
 const schedulingSchema = new mongoose.Schema(
   {
     customerId: {
@@ -29,6 +32,14 @@ const schedulingSchema = new mongoose.Schema(
     date: { type: Date, required: true },
     observacao: { type: String },
     indicacao: { type: String },
+    paymentStatus: {
+      type: String,
+      required: true,
+      enum: paymentStatusOptions,
+      default: "Pendente",
+    },
+    entryValue: { type: Number },
+    paymentMethod: { type: String, enum: paymentMethodOptions },
   },
   { timestamps: true }
 );

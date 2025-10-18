@@ -7,7 +7,7 @@ import {
 } from "../services/schedulingService";
 import { getCustomers } from "../services/customerService";
 import type { Scheduling, SchedulingFormData, Customer } from "../types";
-import { SessionType } from "../types";
+import { SessionType, PaymentStatus, PaymentMethod } from "../types";
 import Input from "../components/Input";
 import Button from "../components/Button";
 
@@ -24,6 +24,9 @@ const SchedulingModal: React.FC<{
     date: "",
     observacao: "",
     indicacao: "",
+    paymentStatus: PaymentStatus.PENDENTE,
+    entryValue: undefined,
+    paymentMethod: undefined,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -38,6 +41,9 @@ const SchedulingModal: React.FC<{
           date: new Date(scheduleToEdit.date).toISOString().split("T")[0],
           observacao: scheduleToEdit.observacao || "",
           indicacao: scheduleToEdit.indicacao || "",
+          paymentStatus: scheduleToEdit.paymentStatus || PaymentStatus.PENDENTE,
+          entryValue: scheduleToEdit.entryValue,
+          paymentMethod: scheduleToEdit.paymentMethod,
         });
       } else {
         setFormData({
@@ -46,6 +52,9 @@ const SchedulingModal: React.FC<{
           date: "",
           observacao: "",
           indicacao: "",
+          paymentStatus: PaymentStatus.PENDENTE,
+          entryValue: undefined,
+          paymentMethod: undefined,
         });
       }
       setErrorMessage("");
@@ -102,7 +111,7 @@ const SchedulingModal: React.FC<{
       aria-modal="true"
     >
       <div
-        className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md"
+        className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-bold text-gray-900 mb-6 border-b pb-4">
@@ -116,73 +125,150 @@ const SchedulingModal: React.FC<{
             {errorMessage}
           </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label
-              htmlFor="customerName"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Nome do Cliente
-            </label>
-            <input
-              id="customerName"
-              name="customerName"
-              type="text"
-              list="customer-list"
-              value={formData.customerName}
-              onChange={handleCustomerChange}
-              placeholder="Digite ou selecione o nome do cliente"
-              required
-              className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm transition"
-            />
-            <datalist id="customer-list">
-              {customers.map((customer) => (
-                <option
-                  key={customer.id}
-                  value={customer.preferredName || customer.fullName}
-                />
-              ))}
-            </datalist>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label
+                htmlFor="customerName"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Nome do Cliente
+              </label>
+              <input
+                id="customerName"
+                name="customerName"
+                type="text"
+                list="customer-list"
+                value={formData.customerName}
+                onChange={handleCustomerChange}
+                placeholder="Digite ou selecione"
+                required
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm transition"
+              />
+              <datalist id="customer-list">
+                {customers.map((customer) => (
+                  <option
+                    key={customer.id}
+                    value={customer.preferredName || customer.fullName}
+                  />
+                ))}
+              </datalist>
+            </div>
+            <div>
+              <label
+                htmlFor="sessionType"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Tipo de Ensaio
+              </label>
+              <select
+                id="sessionType"
+                name="sessionType"
+                value={formData.sessionType}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
+              >
+                {Object.values(SessionType).map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div>
-            <label
-              htmlFor="sessionType"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Tipo de Ensaio
-            </label>
-            <select
-              id="sessionType"
-              name="sessionType"
-              value={formData.sessionType}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Data do Ensaio"
+              id="date"
+              name="date"
+              type="date"
+              value={formData.date}
               onChange={handleChange}
               required
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
-            >
-              {Object.values(SessionType).map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
+            />
+            <Input
+              label="Indicação"
+              id="indicacao"
+              name="indicacao"
+              value={formData.indicacao || ""}
+              onChange={handleChange}
+              placeholder="Quem indicou?"
+            />
           </div>
-          <Input
-            label="Data do Ensaio"
-            id="date"
-            name="date"
-            type="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            label="Indicação"
-            id="indicacao"
-            name="indicacao"
-            value={formData.indicacao || ""}
-            onChange={handleChange}
-            placeholder="Quem indicou este cliente?"
-          />
+
+          <div className="border-t pt-4 mt-4">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Pagamento
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="paymentStatus"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Status do Pagamento
+                </label>
+                <select
+                  id="paymentStatus"
+                  name="paymentStatus"
+                  value={formData.paymentStatus}
+                  onChange={handleChange}
+                  required
+                  className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
+                >
+                  {Object.values(PaymentStatus).map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {formData.paymentStatus === PaymentStatus.ENTRADA_PAGA && (
+                <Input
+                  label="Valor da Entrada (R$)"
+                  id="entryValue"
+                  name="entryValue"
+                  type="number"
+                  step="0.01"
+                  value={formData.entryValue || ""}
+                  onChange={handleChange}
+                  placeholder="Ex: 100,00"
+                />
+              )}
+
+              {formData.paymentStatus !== PaymentStatus.PENDENTE && (
+                <div>
+                  <label
+                    htmlFor="paymentMethod"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Forma de Pagamento
+                  </label>
+                  <select
+                    id="paymentMethod"
+                    name="paymentMethod"
+                    value={formData.paymentMethod || ""}
+                    onChange={handleChange}
+                    // FIX: This condition is redundant inside the conditional rendering block and was causing a linting error.
+                    // Setting it to true is the correct behavior.
+                    required={true}
+                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
+                  >
+                    <option value="">Selecione...</option>
+                    {Object.values(PaymentMethod).map((method) => (
+                      <option key={method} value={method}>
+                        {method}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div>
             <label
               htmlFor="observacao"
@@ -193,7 +279,7 @@ const SchedulingModal: React.FC<{
             <textarea
               id="observacao"
               name="observacao"
-              rows={4}
+              rows={3}
               value={formData.observacao || ""}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm transition"
@@ -228,6 +314,7 @@ const SchedulingListPage: React.FC = () => {
     year: "",
     sessionType: "",
     indicacao: "",
+    paymentStatus: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<Scheduling | null>(
@@ -243,6 +330,7 @@ const SchedulingListPage: React.FC = () => {
         year: currentFilters.year || undefined,
         sessionType: currentFilters.sessionType || undefined,
         indicacao: currentFilters.indicacao || undefined,
+        paymentStatus: currentFilters.paymentStatus || undefined,
       };
       const scheduleData = await getSchedules(params);
       setSchedules(scheduleData);
@@ -284,6 +372,7 @@ const SchedulingListPage: React.FC = () => {
       year: "",
       sessionType: "",
       indicacao: "",
+      paymentStatus: "",
     };
     setFilters(clearedFilters);
     fetchSchedules(clearedFilters);
@@ -331,6 +420,18 @@ const SchedulingListPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const getPaymentStatusStyle = (status: PaymentStatus) => {
+    switch (status) {
+      case PaymentStatus.PAGO_INTEGRALMENTE:
+        return "text-green-600 font-bold";
+      case PaymentStatus.ENTRADA_PAGA:
+        return "text-yellow-600 font-bold";
+      case PaymentStatus.PENDENTE:
+      default:
+        return "text-red-600 font-bold";
+    }
+  };
+
   const years = useMemo(() => {
     const currentYear = new Date().getFullYear();
     return Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
@@ -367,7 +468,7 @@ const SchedulingListPage: React.FC = () => {
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6 p-4 border rounded-md bg-gray-50 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4 mb-6 p-4 border rounded-md bg-gray-50 items-center">
         <select
           name="month"
           value={filters.month}
@@ -409,11 +510,24 @@ const SchedulingListPage: React.FC = () => {
         </select>
         <input
           name="indicacao"
-          placeholder="Pesquisar por indicação"
+          placeholder="Pesquisar indicação"
           value={filters.indicacao}
           onChange={handleFilterChange}
           className="w-full text-base border-gray-300 focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm rounded-md px-3 py-2 bg-white shadow-sm"
         />
+        <select
+          name="paymentStatus"
+          value={filters.paymentStatus}
+          onChange={handleFilterChange}
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm rounded-md"
+        >
+          <option value="">Status Pagamento</option>
+          {Object.values(PaymentStatus).map((status) => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
         <button
           onClick={handleApplyFilters}
           className="w-full bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
@@ -431,8 +545,7 @@ const SchedulingListPage: React.FC = () => {
       {!isLoading && schedules.length > 0 && (
         <div className="mb-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
           <p className="text-md font-semibold text-gray-800">
-            {schedules.length} agendamento(s) encontrado(s) com os filtros
-            atuais.
+            {schedules.length} agendamento(s) encontrado(s).
           </p>
         </div>
       )}
@@ -453,6 +566,11 @@ const SchedulingListPage: React.FC = () => {
                 <p className="text-sm text-gray-600 mt-1">
                   {schedule.sessionType}
                 </p>
+                <p className="text-md font-semibold text-gray-800 mt-4">
+                  {new Date(schedule.date).toLocaleDateString("pt-BR", {
+                    timeZone: "UTC",
+                  })}
+                </p>
                 {schedule.indicacao && (
                   <p className="text-sm text-gray-500 mt-2">
                     <strong>Indicação:</strong> {schedule.indicacao}
@@ -463,11 +581,28 @@ const SchedulingListPage: React.FC = () => {
                     <strong>Obs:</strong> {schedule.observacao}
                   </p>
                 )}
-                <p className="text-md font-semibold text-gray-800 mt-4">
-                  {new Date(schedule.date).toLocaleDateString("pt-BR", {
-                    timeZone: "UTC",
-                  })}
-                </p>
+                <div className="mt-4 pt-4 border-t text-sm space-y-1">
+                  <p>
+                    <strong>Pagamento:</strong>{" "}
+                    <span
+                      className={getPaymentStatusStyle(schedule.paymentStatus)}
+                    >
+                      {schedule.paymentStatus}
+                    </span>
+                  </p>
+                  {schedule.paymentStatus === PaymentStatus.ENTRADA_PAGA &&
+                    schedule.entryValue && (
+                      <p>
+                        <strong>Entrada:</strong> R${" "}
+                        {schedule.entryValue.toFixed(2).replace(".", ",")}
+                      </p>
+                    )}
+                  {schedule.paymentMethod && (
+                    <p>
+                      <strong>Forma:</strong> {schedule.paymentMethod}
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="mt-4 pt-4 border-t flex justify-end space-x-2">
                 <button
