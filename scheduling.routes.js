@@ -9,20 +9,20 @@ router.get("/", async (req, res) => {
     const { month, year, sessionType, indicacao, paymentStatus, shootStatus } =
       req.query;
 
-    const queryConditions = [];
+    const filter = {}; // Start with an empty filter object
 
-    // Add string-based filters to the conditions array
+    // Add string-based filters directly to the filter object
     if (sessionType) {
-      queryConditions.push({ sessionType: sessionType });
+      filter.sessionType = sessionType;
     }
     if (indicacao) {
-      queryConditions.push({ indicacao: { $regex: indicacao, $options: "i" } });
+      filter.indicacao = { $regex: indicacao, $options: "i" };
     }
     if (paymentStatus) {
-      queryConditions.push({ paymentStatus: paymentStatus });
+      filter.paymentStatus = paymentStatus;
     }
     if (shootStatus) {
-      queryConditions.push({ shootStatus: shootStatus });
+      filter.shootStatus = shootStatus;
     }
 
     // Handle date filters
@@ -47,11 +47,8 @@ router.get("/", async (req, res) => {
         const endDate = new Date(Date.UTC(targetYear, 11, 31, 23, 59, 59, 999));
         dateFilter = { $gte: startDate, $lte: endDate };
       }
-      queryConditions.push({ date: dateFilter });
+      filter.date = dateFilter;
     }
-
-    // Build the final filter object. Use $and if multiple conditions exist.
-    const filter = queryConditions.length > 0 ? { $and: queryConditions } : {};
 
     const schedules = await Scheduling.find(filter)
       .sort({ date: 1 })
