@@ -8,6 +8,7 @@ interface GetSchedulesParams {
   sessionType?: string;
   indicacao?: string;
   paymentStatus?: string;
+  shootStatus?: string;
 }
 
 export const getSchedules = async (
@@ -19,6 +20,7 @@ export const getSchedules = async (
   if (params.sessionType) query.append("sessionType", params.sessionType);
   if (params.indicacao) query.append("indicacao", params.indicacao);
   if (params.paymentStatus) query.append("paymentStatus", params.paymentStatus);
+  if (params.shootStatus) query.append("shootStatus", params.shootStatus);
 
   try {
     const response = await fetch(`${API_BASE_URL}?${query.toString()}`);

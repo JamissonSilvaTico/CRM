@@ -7,7 +7,7 @@ import {
 } from "../services/schedulingService";
 import { getCustomers } from "../services/customerService";
 import type { Scheduling, SchedulingFormData, Customer } from "../types";
-import { SessionType, PaymentStatus, PaymentMethod } from "../types";
+import { SessionType, PaymentStatus, PaymentMethod, ShootStatus } from "../types";
 import Input from "../components/Input";
 import Button from "../components/Button";
 
@@ -18,7 +18,7 @@ const SchedulingModal: React.FC<{
   scheduleToEdit: Scheduling | null;
   customers: Customer[];
 }> = ({ isOpen, onClose, onSave, scheduleToEdit, customers }) => {
-  const [formData, setFormData] = useState<SchedulingFormData>({
+  const initialFormData: SchedulingFormData = {
     customerName: "",
     sessionType: Object.values(SessionType)[0],
     date: "",
@@ -27,7 +27,10 @@ const SchedulingModal: React.FC<{
     paymentStatus: PaymentStatus.PENDENTE,
     entryValue: undefined,
     paymentMethod: undefined,
-  });
+    shootStatus: ShootStatus.PENDENTE,
+  };
+
+  const [formData, setFormData] = useState<SchedulingFormData>(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -44,18 +47,10 @@ const SchedulingModal: React.FC<{
           paymentStatus: scheduleToEdit.paymentStatus || PaymentStatus.PENDENTE,
           entryValue: scheduleToEdit.entryValue,
           paymentMethod: scheduleToEdit.paymentMethod,
+          shootStatus: scheduleToEdit.shootStatus || ShootStatus.PENDENTE,
         });
       } else {
-        setFormData({
-          customerName: "",
-          sessionType: Object.values(SessionType)[0],
-          date: "",
-          observacao: "",
-          indicacao: "",
-          paymentStatus: PaymentStatus.PENDENTE,
-          entryValue: undefined,
-          paymentMethod: undefined,
-        });
+        setFormData(initialFormData);
       }
       setErrorMessage("");
     }
@@ -178,15 +173,39 @@ const SchedulingModal: React.FC<{
             </div>
           </div>
 
-          <Input
-            label="Data do Ensaio"
-            id="date"
-            name="date"
-            type="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Data do Ensaio"
+              id="date"
+              name="date"
+              type="date"
+              value={formData.date}
+              onChange={handleChange}
+              required
+            />
+            <div>
+              <label
+                htmlFor="shootStatus"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Status do Ensaio
+              </label>
+              <select
+                id="shootStatus"
+                name="shootStatus"
+                value={formData.shootStatus}
+                onChange={handleChange}
+                required
+                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm rounded-md"
+              >
+                {Object.values(ShootStatus).map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
           <Input
             label="Indicação"
@@ -312,31 +331,36 @@ const SchedulingListPage: React.FC = () => {
     sessionType: "",
     indicacao: "",
     paymentStatus: "",
+    shootStatus: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState<Scheduling | null>(
     null
   );
 
-  const fetchSchedules = useCallback(async (currentFilters: typeof filters) => {
-    setIsLoading(true);
-    setError("");
-    try {
-      const params = {
-        month: currentFilters.month || undefined,
-        year: currentFilters.year || undefined,
-        sessionType: currentFilters.sessionType || undefined,
-        indicacao: currentFilters.indicacao || undefined,
-        paymentStatus: currentFilters.paymentStatus || undefined,
-      };
-      const scheduleData = await getSchedules(params);
-      setSchedules(scheduleData);
-    } catch (err) {
-      setError("Falha ao carregar agendamentos.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const fetchSchedules = useCallback(
+    async (currentFilters: typeof filters) => {
+      setIsLoading(true);
+      setError("");
+      try {
+        const params = {
+          month: currentFilters.month || undefined,
+          year: currentFilters.year || undefined,
+          sessionType: currentFilters.sessionType || undefined,
+          indicacao: currentFilters.indicacao || undefined,
+          paymentStatus: currentFilters.paymentStatus || undefined,
+          shootStatus: currentFilters.shootStatus || undefined,
+        };
+        const scheduleData = await getSchedules(params);
+        setSchedules(scheduleData);
+      } catch (err) {
+        setError("Falha ao carregar agendamentos.");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -344,16 +368,15 @@ const SchedulingListPage: React.FC = () => {
       try {
         const customerData = await getCustomers();
         setCustomers(customerData);
-        const scheduleData = await getSchedules({}); // Fetch all schedules initially
-        setSchedules(scheduleData);
+        // On initial load, fetch schedules with default/empty filters,
+        // which will also trigger the automatic status update on the server.
+        await fetchSchedules(filters);
       } catch (err) {
         setError("Falha ao carregar dados iniciais.");
       } finally {
         setIsLoading(false);
       }
-    };
-    fetchInitialData();
-  }, []);
+    }, [fetchSchedules]); // Added fetchSchedules to dependency array
 
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -372,6 +395,7 @@ const SchedulingListPage: React.FC = () => {
       sessionType: "",
       indicacao: "",
       paymentStatus: "",
+      shootStatus: "",
     };
     setFilters(clearedFilters);
     fetchSchedules(clearedFilters);
@@ -431,6 +455,18 @@ const SchedulingListPage: React.FC = () => {
     }
   };
 
+  const getShootStatusStyle = (status: ShootStatus) => {
+    switch (status) {
+      case ShootStatus.REALIZADO:
+        return "text-green-600 font-bold";
+      case ShootStatus.PENDENTE:
+        return "text-yellow-600 font-bold";
+      case ShootStatus.CANCELADO:
+      default:
+        return "text-zinc-500 font-bold";
+    }
+  };
+
   const years = useMemo(() => {
     const currentYear = new Date().getFullYear();
     return Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
@@ -467,7 +503,7 @@ const SchedulingListPage: React.FC = () => {
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-7 gap-4 mb-6 p-4 border rounded-md bg-gray-50 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-8 gap-4 mb-6 p-4 border rounded-md bg-gray-50 items-center">
         <select
           name="month"
           value={filters.month}
@@ -527,6 +563,19 @@ const SchedulingListPage: React.FC = () => {
             </option>
           ))}
         </select>
+        <select
+          name="shootStatus"
+          value={filters.shootStatus}
+          onChange={handleFilterChange}
+          className="w-full text-base border-gray-300 focus:outline-none focus:ring-gray-700 focus:border-gray-700 sm:text-sm rounded-md"
+        >
+          <option value="">Status Ensaio</option>
+          {Object.values(ShootStatus).map((status) => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
         <button
           onClick={handleApplyFilters}
           className="w-full bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700"
@@ -581,6 +630,12 @@ const SchedulingListPage: React.FC = () => {
                   </p>
                 )}
                 <div className="mt-4 pt-4 border-t text-sm space-y-1">
+                  <p>
+                    <strong>Status Ensaio:</strong>{" "}
+                    <span className={getShootStatusStyle(schedule.shootStatus)}>
+                      {schedule.shootStatus}
+                    </span>
+                  </p>
                   <p>
                     <strong>Pagamento:</strong>{" "}
                     <span

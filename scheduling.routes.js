@@ -5,8 +5,23 @@ const mongoose = require("mongoose");
 
 // GET all schedules with optional filters
 router.get("/", async (req, res) => {
+  // Auto-update past pending shoots to "Realizado"
   try {
-    const { month, year, sessionType, indicacao, paymentStatus } = req.query;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to the beginning of today for accurate comparison
+
+    await Scheduling.updateMany(
+      { date: { $lt: today }, shootStatus: "Pendente" },
+      { $set: { shootStatus: "Realizado" } }
+    );
+  } catch (updateErr) {
+    console.error("Error auto-updating shoot statuses:", updateErr);
+    // Continue fetching even if update fails, but log the error
+  }
+
+  try {
+    const { month, year, sessionType, indicacao, paymentStatus, shootStatus } =
+      req.query;
 
     const filter = {}; // Start with an empty filter object
 
@@ -19,6 +34,9 @@ router.get("/", async (req, res) => {
     }
     if (paymentStatus) {
       filter.paymentStatus = paymentStatus;
+    }
+    if (shootStatus) {
+      filter.shootStatus = shootStatus;
     }
 
     // Handle date filters
@@ -88,6 +106,7 @@ router.post("/", async (req, res) => {
     paymentStatus,
     entryValue,
     paymentMethod,
+    shootStatus, // New field
   } = req.body;
 
   if (!customerName || !sessionType || !date) {
@@ -105,6 +124,7 @@ router.post("/", async (req, res) => {
     paymentStatus,
     entryValue,
     paymentMethod,
+    shootStatus, // New field
   };
   // Only associate with a customer if a valid ID is provided
   if (customerId && mongoose.Types.ObjectId.isValid(customerId)) {

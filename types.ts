@@ -53,6 +53,12 @@ export enum PaymentMethod {
   CREDITO = "Crédito",
 }
 
+export enum ShootStatus {
+  PENDENTE = "Pendente",
+  REALIZADO = "Realizado",
+  CANCELADO = "Cancelado",
+}
+
 export interface Scheduling {
   id: string;
   customerId?: string;
@@ -64,6 +70,7 @@ export interface Scheduling {
   paymentStatus: PaymentStatus;
   entryValue?: number;
   paymentMethod?: PaymentMethod;
+  shootStatus: ShootStatus;
 }
 
 export type SchedulingFormData = Omit<Scheduling, "id">;

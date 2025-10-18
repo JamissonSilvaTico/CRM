@@ -7,7 +7,7 @@ import {
   updateSchedule,
 } from "../services/schedulingService";
 import type { Customer, SchedulingFormData } from "../types";
-import { SessionType, PaymentStatus } from "../types";
+import { SessionType, PaymentStatus, ShootStatus } from "../types";
 import Input from "../components/Input";
 import Button from "../components/Button";
 
@@ -26,6 +26,7 @@ const SchedulingPage: React.FC = () => {
     paymentStatus: PaymentStatus.PENDENTE,
     entryValue: undefined,
     paymentMethod: undefined,
+    shootStatus: ShootStatus.PENDENTE,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -51,6 +52,7 @@ const SchedulingPage: React.FC = () => {
             paymentStatus: scheduleData.paymentStatus,
             entryValue: scheduleData.entryValue,
             paymentMethod: scheduleData.paymentMethod,
+            shootStatus: scheduleData.shootStatus,
           });
         }
       } catch (error) {
@@ -112,6 +114,7 @@ const SchedulingPage: React.FC = () => {
           entryValue: undefined,
           paymentMethod: undefined,
           customerId: undefined,
+          shootStatus: ShootStatus.PENDENTE,
         });
       }
       window.scrollTo(0, 0);
@@ -215,6 +218,29 @@ const SchedulingPage: React.FC = () => {
           onChange={handleChange}
           required
         />
+
+        <div>
+          <label
+            htmlFor="shootStatus"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Status do Ensaio
+          </label>
+          <select
+            id="shootStatus"
+            name="shootStatus"
+            value={formData.shootStatus}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+          >
+            {Object.values(ShootStatus).map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div>
           <label
