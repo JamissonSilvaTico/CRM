@@ -150,33 +150,54 @@ router.put("/:id", async (req, res) => {
   }
   try {
     const updateData = { ...req.body };
-    const ops = {};
+    const ops = { $set: {}, $unset: {} };
 
-    // If customerId is present but empty/invalid, unset it.
-    // If it's valid, set it. If it's not present, do nothing to it.
+    // Handle customerId
     if (updateData.hasOwnProperty("customerId")) {
       if (
         updateData.customerId &&
         mongoose.Types.ObjectId.isValid(updateData.customerId)
       ) {
-        ops.$set = { ...ops.$set, customerId: updateData.customerId };
+        ops.$set.customerId = updateData.customerId;
       } else {
-        ops.$unset = { customerId: 1 };
+        ops.$unset.customerId = 1;
       }
       delete updateData.customerId;
     }
 
-    // Payment logic: unset fields that are no longer relevant based on status
-    if (updateData.paymentStatus === "Pendente") {
-      ops.$unset = { ...ops.$unset, entryValue: 1, paymentMethod: 1 };
-      delete updateData.entryValue;
+    // Clean up empty string values for optional fields to avoid validation errors
+    if (updateData.paymentMethod === "") {
+      ops.$unset.paymentMethod = 1;
       delete updateData.paymentMethod;
-    } else if (updateData.paymentStatus === "Pago Integralmente") {
-      ops.$unset = { ...ops.$unset, entryValue: 1 };
+    }
+    if (updateData.entryValue === "" || updateData.entryValue == null) {
+      ops.$unset.entryValue = 1;
       delete updateData.entryValue;
     }
 
+    // Apply payment logic based on status
+    if (updateData.paymentStatus === "Pendente") {
+      ops.$unset.entryValue = 1;
+      ops.$unset.paymentMethod = 1;
+      delete updateData.entryValue;
+      delete updateData.paymentMethod;
+    } else if (updateData.paymentStatus === "Pago Integralmente") {
+      ops.$unset.entryValue = 1;
+      delete updateData.entryValue;
+    }
+
+    // Add remaining valid data to the $set operator
     ops.$set = { ...ops.$set, ...updateData };
+
+    // Clean up empty operators
+    if (Object.keys(ops.$set).length === 0) delete ops.$set;
+    if (Object.keys(ops.$unset).length === 0) delete ops.$unset;
+
+    // If there's nothing to update, just return the existing document
+    if (Object.keys(ops).length === 0) {
+      const schedule = await Scheduling.findById(req.params.id);
+      return res.json(schedule);
+    }
 
     const updatedSchedule = await Scheduling.findByIdAndUpdate(
       req.params.id,
