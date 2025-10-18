@@ -7,9 +7,7 @@ import {
   updateSchedule,
 } from "../services/schedulingService";
 import type { Customer, SchedulingFormData } from "../types";
-// FIX: Import PaymentStatus to use it for default state.
-// FIX: Import ShootStatus to use it for default state and fix type errors.
-import { SessionType, PaymentStatus, ShootStatus } from "../types";
+import { SessionType, PaymentStatus } from "../types";
 import Input from "../components/Input";
 import Button from "../components/Button";
 
@@ -19,8 +17,6 @@ const SchedulingPage: React.FC = () => {
   const isEditing = Boolean(id);
 
   const [customers, setCustomers] = useState<Customer[]>([]);
-  // FIX: The initial state was missing the required 'paymentStatus' and 'shootStatus' properties.
-  // This ensures the state object conforms to the SchedulingFormData type.
   const [formData, setFormData] = useState<SchedulingFormData>({
     customerName: "",
     sessionType: Object.values(SessionType)[0],
@@ -30,7 +26,6 @@ const SchedulingPage: React.FC = () => {
     paymentStatus: PaymentStatus.PENDENTE,
     entryValue: undefined,
     paymentMethod: undefined,
-    shootStatus: ShootStatus.PENDENTE,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
@@ -46,8 +41,6 @@ const SchedulingPage: React.FC = () => {
 
         if (isEditing && id) {
           const scheduleData = await getScheduleById(id);
-          // FIX: The object passed to setFormData was missing 'paymentStatus', 'shootStatus' and other fields,
-          // causing a type error. All fields from the fetched schedule are now included.
           setFormData({
             customerId: scheduleData.customerId,
             customerName: scheduleData.customerName,
@@ -58,7 +51,6 @@ const SchedulingPage: React.FC = () => {
             paymentStatus: scheduleData.paymentStatus,
             entryValue: scheduleData.entryValue,
             paymentMethod: scheduleData.paymentMethod,
-            shootStatus: scheduleData.shootStatus,
           });
         }
       } catch (error) {
@@ -110,8 +102,6 @@ const SchedulingPage: React.FC = () => {
       } else {
         await addSchedule(payload as SchedulingFormData);
         setSuccessMessage("Agendamento criado com sucesso!");
-        // FIX: The form reset object was missing 'paymentStatus', 'shootStatus' and other fields,
-        // causing a type error. The form is now reset to its complete initial state.
         setFormData({
           customerName: "",
           sessionType: Object.values(SessionType)[0],
@@ -122,7 +112,6 @@ const SchedulingPage: React.FC = () => {
           entryValue: undefined,
           paymentMethod: undefined,
           customerId: undefined,
-          shootStatus: ShootStatus.PENDENTE,
         });
       }
       window.scrollTo(0, 0);

@@ -6,8 +6,7 @@ const mongoose = require("mongoose");
 // GET all schedules with optional filters
 router.get("/", async (req, res) => {
   try {
-    const { month, year, sessionType, indicacao, paymentStatus, shootStatus } =
-      req.query;
+    const { month, year, sessionType, indicacao, paymentStatus } = req.query;
 
     const filter = {}; // Start with an empty filter object
 
@@ -20,9 +19,6 @@ router.get("/", async (req, res) => {
     }
     if (paymentStatus) {
       filter.paymentStatus = paymentStatus;
-    }
-    if (shootStatus) {
-      filter.shootStatus = shootStatus;
     }
 
     // Handle date filters
@@ -92,7 +88,6 @@ router.post("/", async (req, res) => {
     paymentStatus,
     entryValue,
     paymentMethod,
-    shootStatus,
   } = req.body;
 
   if (!customerName || !sessionType || !date) {
@@ -110,7 +105,6 @@ router.post("/", async (req, res) => {
     paymentStatus,
     entryValue,
     paymentMethod,
-    shootStatus,
   };
   // Only associate with a customer if a valid ID is provided
   if (customerId && mongoose.Types.ObjectId.isValid(customerId)) {
