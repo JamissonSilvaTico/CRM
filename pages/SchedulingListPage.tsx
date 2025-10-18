@@ -351,7 +351,7 @@ const SchedulingListPage: React.FC = () => {
     null
   );
 
-  const fetchSchedules = useCallback(async (currentFilters: typeof filters) => {
+  const fetchSchedules = async (currentFilters: typeof filters) => {
     setIsLoading(true);
     setError("");
     try {
@@ -370,15 +370,18 @@ const SchedulingListPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
     const fetchInitialData = async () => {
       setIsLoading(true);
       setError("");
       try {
-        await fetchSchedules(filters);
-        const customerData = await getCustomers();
+        const [scheduleData, customerData] = await Promise.all([
+          getSchedules(), // Fetch all schedules initially
+          getCustomers(),
+        ]);
+        setSchedules(scheduleData);
         setCustomers(customerData);
       } catch (err) {
         setError("Falha ao carregar dados iniciais.");
@@ -387,7 +390,7 @@ const SchedulingListPage: React.FC = () => {
       }
     };
     fetchInitialData();
-  }, [fetchSchedules]);
+  }, []); // Run only on component mount
 
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -414,7 +417,8 @@ const SchedulingListPage: React.FC = () => {
     if (window.confirm("Tem certeza que deseja excluir este agendamento?")) {
       try {
         await deleteSchedule(id);
-        setSchedules((prev) => prev.filter((s) => s.id !== id));
+        // Refetch after delete to ensure list is up-to-date with current filters
+        fetchSchedules(filters);
       } catch (err) {
         setError("Falha ao excluir o agendamento.");
       }
@@ -435,7 +439,7 @@ const SchedulingListPage: React.FC = () => {
       } else {
         await addSchedule(payload);
       }
-      fetchSchedules(filters);
+      fetchSchedules(filters); // Refetch after save
     } catch (error) {
       console.error("Failed to save schedule", error);
       throw error;
