@@ -376,15 +376,10 @@ const SchedulingListPage: React.FC = () => {
     const fetchInitialData = async () => {
       setIsLoading(true);
       try {
-        await getCustomers().then(setCustomers);
-        await fetchSchedules({
-          month: "",
-          year: "",
-          sessionType: "",
-          indicacao: "",
-          paymentStatus: "",
-          shootStatus: "",
-        });
+        const customerData = await getCustomers();
+        setCustomers(customerData);
+        const scheduleData = await getSchedules({}); // Fetch all schedules initially
+        setSchedules(scheduleData);
       } catch (err) {
         setError("Falha ao carregar dados iniciais.");
       } finally {
@@ -392,7 +387,7 @@ const SchedulingListPage: React.FC = () => {
       }
     };
     fetchInitialData();
-  }, [fetchSchedules]);
+  }, []);
 
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
