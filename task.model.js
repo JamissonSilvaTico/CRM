@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const serviceTypes = [
   "Acompanhamento de bebes",
   "Acompanhamento de Gestante",
+  "Ensaio Gestante",
   "Eventos",
   "Parto",
   "Newborn",
