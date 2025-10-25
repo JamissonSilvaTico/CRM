@@ -4,6 +4,7 @@ const serviceTypes = [
   "Acompanhamento de bebes",
   "Acompanhamento de Gestante",
   "Ensaio Gestante",
+  "Ensaio Infantil",
   "Eventos",
   "Parto",
   "Newborn",

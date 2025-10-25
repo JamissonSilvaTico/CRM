@@ -80,6 +80,7 @@ export enum TaskServiceType {
   ACOMPANHAMENTO_BEBES = "Acompanhamento de bebes",
   ACOMPANHAMENTO_GESTANTE = "Acompanhamento de Gestante",
   ENSAIO_GESTANTE = "Ensaio Gestante",
+  ENSAIO_INFANTIL = "Ensaio Infantil",
   EVENTOS = "Eventos",
   PARTO = "Parto",
   NEWBORN = "Newborn",
